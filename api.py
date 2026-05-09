@@ -57,17 +57,16 @@ async def analyze_query(request: QueryRequest):
             cautioned_cases.extend(ed.get("cautioned_cases", []))
             rejected_cases.extend(ed.get("rejected_cases", []))
             
-        # Return the rich structured data for the frontend to render
         return {
             "query": request.query,
             "routed_domains": final_state.get("routed_domains", []),
-            "extracted_entities": final_state.get("extracted_entities", []),
-            "classification": classification,
-            "verified_cases": verified_cases,
-            "cautioned_cases": cautioned_cases,
-            "rejected_cases": rejected_cases,
-            "final_opinion": final_state.get("final_draft", "Failed to generate opinion."),
-            "depth": final_state.get("research_depth", 0)
+            "final_draft": final_state.get("final_draft", "No output generated."),
+            "revisions_made": final_state.get("revision_count", 0),
+            "pipeline_summary": {
+                "verified_cases": len(verified_cases),
+                "cautioned_cases": len(cautioned_cases),
+                "rejected_cases": len(rejected_cases),
+            }
         }
     except Exception as e:
         import traceback
