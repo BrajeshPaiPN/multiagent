@@ -4,11 +4,16 @@ function switchTab(tabId, event) {
     
     // Update nav links
     document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
-    event.target.classList.add('active');
+    if(event) event.target.classList.add('active');
 
     // Update sections
-    document.querySelectorAll('.tab-content').forEach(sec => sec.classList.add('hidden'));
-    document.getElementById(tabId + '-section').classList.remove('hidden');
+    document.querySelectorAll('.tab-content').forEach(sec => sec.classList.remove('active'));
+    document.getElementById(tabId + '-section').classList.add('active');
+}
+
+// Get the current mode
+function getMode() {
+    return document.getElementById('mode-toggle').checked ? "counsel" : "citizen";
 }
 
 // ==========================================
@@ -31,7 +36,7 @@ async function submitQuery() {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ query: queryInput })
+            body: JSON.stringify({ query: queryInput, mode: getMode() })
         });
 
         if (!response.ok) {
@@ -99,6 +104,7 @@ async function handleFileUpload() {
     const file = fileInput.files[0];
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("mode", getMode());
 
     // UI State: Loading
     document.getElementById('contract-result').classList.add('hidden');

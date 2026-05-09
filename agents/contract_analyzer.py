@@ -23,10 +23,10 @@ class ContractReview(BaseModel):
     overall_recommendation: str = Field(description="Detailed concluding advice.")
     critical_pitfalls: List[ClauseAnalysis] = Field(description="List of specific risky clauses found in the document.")
 
-def analyze_contract_text(contract_text: str) -> dict:
+def analyze_contract_text(contract_text: str, mode: str = "citizen") -> dict:
     """Passes the raw contract text to the LLM for rigorous review."""
     print("\n" + "=" * 60)
-    print(">>> CONTRACT ANALYZER: Reviewing Legal Document")
+    print(f">>> CONTRACT ANALYZER: Reviewing Legal Document (Mode: {mode})")
     print("=" * 60)
     print(f"    [*] Extracted {len(contract_text)} characters for analysis.")
     
@@ -35,6 +35,11 @@ def analyze_contract_text(contract_text: str) -> dict:
             "error": "Extracted text is too short or illegible. Please upload a clearer document."
         }
         
+    if mode == "citizen":
+        mode_instruction = "IMPORTANT: Write the summary, explanations, and mitigations in very simple, plain English. Explain legal concepts so an everyday citizen can understand the risks without needing a law degree."
+    else:
+        mode_instruction = "IMPORTANT: Write the analysis for a senior attorney. Use precise legal terminology, cite relevant acts if applicable, and maintain a highly professional, rigorous legal tone."
+        
     prompt = f"""You are a highly experienced Indian Contract and Corporate Lawyer.
 Your client has asked you to review the following contract/agreement before they sign it.
 
@@ -42,6 +47,8 @@ Your job is to strictly analyze the contract and identify:
 1. Hidden pitfalls or 'gotcha' clauses.
 2. Severely one-sided terms (e.g., unfair indemnity, unreasonable non-competes, skewed termination rights).
 3. Ambiguities that could lead to litigation.
+
+{mode_instruction}
 
 === RAW CONTRACT TEXT ===
 {contract_text}

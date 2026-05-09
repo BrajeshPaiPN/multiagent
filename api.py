@@ -4,7 +4,7 @@ FastAPI Backend for AKGP Legal Intelligence Engine
 Serves the Vanilla HTML frontend and exposes a REST API for the LangGraph agent swarm.
 """
 
-from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
@@ -32,6 +32,7 @@ agent_swarm = build_legal_graph()
 
 class QueryRequest(BaseModel):
     query: str
+    mode: str = "citizen"
 
 @app.post("/api/analyze")
 async def analyze_query(request: QueryRequest):
@@ -41,7 +42,7 @@ async def analyze_query(request: QueryRequest):
     
     try:
         # Initialize the LangGraph state
-        initial_state = create_initial_state(request.query)
+        initial_state = create_initial_state(request.query, request.mode)
         
         # Run the multi-agent pipeline
         # Note: Since this is synchronous, it will block the worker.
@@ -74,7 +75,7 @@ async def analyze_query(request: QueryRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/analyze-contract")
-async def analyze_contract(file: UploadFile = File(...)):
+async def analyze_contract(file: UploadFile = File(...), mode: str = Form("citizen")):
     """Upload a PDF or Image of a contract to find risks and pitfalls."""
     try:
         os.makedirs("rag/uploads", exist_ok=True)
@@ -100,7 +101,7 @@ async def analyze_contract(file: UploadFile = File(...)):
         if not extracted_text.strip():
             raise HTTPException(status_code=400, detail="Could not extract any readable text from the file.")
             
-        analysis = analyze_contract_text(extracted_text)
+        analysis = analyze_contract_text(extracted_text, mode)
         if "error" in analysis:
             raise HTTPException(status_code=500, detail=analysis["error"])
             

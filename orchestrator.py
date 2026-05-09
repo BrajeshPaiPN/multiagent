@@ -36,6 +36,7 @@ from agents.rag_retriever import node_rag_retriever
 
 class LegalState(TypedDict):
     user_query: str
+    mode: str
     rag_context: str
     routed_domains: List[str]
     
@@ -119,9 +120,10 @@ def build_legal_graph():
     return workflow.compile()
 
 
-def create_initial_state(query: str) -> LegalState:
+def create_initial_state(query: str, mode: str = "citizen") -> LegalState:
     return {
         "user_query": query,
+        "mode": mode,
         "rag_context": "",
         "routed_domains": [],
         "expert_drafts": [],
