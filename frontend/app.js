@@ -1,181 +1,218 @@
-// Tab Switching Logic
-function switchTab(tabId, event) {
-    if(event) event.preventDefault();
-    
-    // Update nav links
-    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
-    if(event) event.target.classList.add('active');
+/**
+ * Nyaya AI — Frontend Application Logic
+ * Handles tab switching, mode selection, query submission, contract upload.
+ */
 
-    // Update sections
-    document.querySelectorAll('.tab-content').forEach(sec => sec.classList.remove('active'));
-    document.getElementById(tabId + '-section').classList.add('active');
-}
+// ── State ──────────────────────────────────────────────────
+let currentMode = 'citizen';
+let isLoading = false;
 
-// Get the current mode
-function getMode() {
-    return document.getElementById('mode-toggle').checked ? "counsel" : "citizen";
-}
+// ── Helpers ────────────────────────────────────────────────
+function getMode() { return currentMode; }
 
-// ==========================================
-// TAB 1: LEGAL ENGINE QUERY
-// ==========================================
-async function submitQuery() {
-    const queryInput = document.getElementById('legal-query').value.trim();
-    if (!queryInput) {
-        alert("Please enter a legal query.");
-        return;
+function setMode(mode) {
+    if (isLoading) return;
+    currentMode = mode;
+    document.getElementById('btn-citizen').classList.toggle('active', mode === 'citizen');
+    document.getElementById('btn-counsel').classList.toggle('active', mode === 'counsel');
+    const badge = document.getElementById('mode-label');
+    if (mode === 'citizen') {
+        badge.textContent = 'Plain English Mode';
+        badge.style.color = 'var(--blue)';
+        badge.style.background = 'var(--blue-dim)';
+        badge.style.borderColor = 'rgba(59,130,246,0.25)';
+    } else {
+        badge.textContent = 'Legal Counsel Mode';
+        badge.style.color = 'var(--gold)';
+        badge.style.background = 'var(--gold-dim)';
+        badge.style.borderColor = 'rgba(212,168,67,0.25)';
     }
+}
 
-    // UI State: Loading
-    document.getElementById('mode-toggle').disabled = true;
+function setLoadingLock(locked) {
+    isLoading = locked;
+    document.getElementById('mode-pill').classList.toggle('disabled', locked);
+}
+
+function switchTab(tab) {
+    document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('section-' + tab).classList.add('active');
+    document.getElementById('tab-' + tab).classList.add('active');
+}
+
+// ── Animated agent steps ────────────────────────────────────
+const steps = ['step-rag', 'step-router', 'step-expert', 'step-synth'];
+let stepInterval = null;
+
+function startAgentAnimation() {
+    let i = 0;
+    steps.forEach(id => {
+        const dot = document.querySelector('#' + id + ' .step-dot');
+        if (dot) { dot.className = 'step-dot'; }
+    });
+    document.querySelector('#' + steps[0] + ' .step-dot').classList.add('active-step');
+    stepInterval = setInterval(() => {
+        const prev = document.querySelector('#' + steps[i] + ' .step-dot');
+        if (prev) prev.classList.replace('active-step', 'done-step');
+        i++;
+        if (i < steps.length) {
+            const curr = document.querySelector('#' + steps[i] + ' .step-dot');
+            if (curr) curr.classList.add('active-step');
+        } else {
+            clearInterval(stepInterval);
+        }
+    }, 8000);
+}
+
+function stopAgentAnimation() {
+    clearInterval(stepInterval);
+    steps.forEach(id => {
+        const dot = document.querySelector('#' + id + ' .step-dot');
+        if (dot) dot.className = 'step-dot done-step';
+    });
+}
+
+// ── TAB 1: Legal Engine ─────────────────────────────────────
+async function submitQuery() {
+    const query = document.getElementById('legal-query').value.trim();
+    if (!query) { alert('Please describe your legal situation.'); return; }
+
+    setLoadingLock(true);
     document.getElementById('query-result').classList.add('hidden');
     document.getElementById('query-loading').classList.remove('hidden');
+    startAgentAnimation();
 
     try {
-        const response = await fetch('/api/analyze', {
+        const res = await fetch('/api/analyze', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ query: queryInput, mode: getMode() })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query, mode: getMode() })
         });
+        if (!res.ok) throw new Error(`Server returned ${res.status}`);
+        const data = await res.json();
 
-        if (!response.ok) {
-            throw new Error(`Server returned ${response.status}`);
-        }
-
-        const data = await response.json();
-        
-        // Render Tags
-        const tagsContainer = document.getElementById('routed-domains');
-        tagsContainer.innerHTML = '';
-        data.routed_domains.forEach(domain => {
+        // Tags
+        const tagsEl = document.getElementById('routed-domains');
+        tagsEl.innerHTML = '';
+        (data.routed_domains || []).forEach(d => {
             const tag = document.createElement('span');
             tag.className = 'tag';
-            tag.textContent = domain.toUpperCase();
-            tagsContainer.appendChild(tag);
+            tag.textContent = d.toUpperCase();
+            tagsEl.appendChild(tag);
         });
 
-        // Render Stats
-        document.getElementById('stat-verified').textContent = data.pipeline_summary?.verified_cases || 0;
-        document.getElementById('stat-cautioned').textContent = data.pipeline_summary?.cautioned_cases || 0;
-        document.getElementById('stat-rejected').textContent = data.pipeline_summary?.rejected_cases || 0;
-        document.getElementById('stat-revisions').textContent = data.revisions_made || 0;
+        // Stats
+        document.getElementById('stat-verified').textContent = data.pipeline_summary?.verified_cases ?? 0;
+        document.getElementById('stat-cautioned').textContent = data.pipeline_summary?.cautioned_cases ?? 0;
+        document.getElementById('stat-rejected').textContent = data.pipeline_summary?.rejected_cases ?? 0;
+        document.getElementById('stat-revisions').textContent = data.revisions_made ?? 0;
 
-        // Render Markdown
-        document.getElementById('final-draft').innerHTML = marked.parse(data.final_draft);
+        // Memo
+        document.getElementById('final-draft').innerHTML = marked.parse(data.final_draft || '');
 
-        // UI State: Done
+        stopAgentAnimation();
         document.getElementById('query-loading').classList.add('hidden');
         document.getElementById('query-result').classList.remove('hidden');
+        document.getElementById('query-result').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-    } catch (error) {
-        alert("Error connecting to AI: " + error.message);
+    } catch (err) {
+        stopAgentAnimation();
         document.getElementById('query-loading').classList.add('hidden');
+        alert('Error connecting to AI: ' + err.message);
     } finally {
-        document.getElementById('mode-toggle').disabled = false;
+        setLoadingLock(false);
     }
 }
 
-// ==========================================
-// TAB 2: CONTRACT ANALYZER
-// ==========================================
-const dropZone = document.getElementById('drop-zone');
-const fileInput = document.getElementById('file-input');
+// ── TAB 2: Contract Analyzer ───────────────────────────────
+function handleDrop(event) {
+    event.preventDefault();
+    document.getElementById('drop-area').classList.remove('drag-over');
+    const file = event.dataTransfer.files[0];
+    if (file) showFileSelected(file);
+}
 
-// Drag events
-dropZone.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    dropZone.classList.add('dragover');
-});
-dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-dropZone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    dropZone.classList.remove('dragover');
-    if (e.dataTransfer.files.length) {
-        fileInput.files = e.dataTransfer.files;
-        handleFileUpload();
-    }
-});
+function handleFileSelect(event) {
+    const file = event.target.files[0];
+    if (file) showFileSelected(file);
+}
 
-// Click event
-fileInput.addEventListener('change', handleFileUpload);
+function showFileSelected(file) {
+    document.getElementById('file-name-display').textContent = file.name;
+    document.getElementById('file-selected').classList.remove('hidden');
+    // Store reference for later upload
+    window._selectedFile = file;
+}
 
 async function handleFileUpload() {
-    if (!fileInput.files.length) return;
-    
-    const file = fileInput.files[0];
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("mode", getMode());
+    const file = window._selectedFile;
+    if (!file) return;
 
-    // UI State: Loading
-    document.getElementById('mode-toggle').disabled = true;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('mode', getMode());
+
+    setLoadingLock(true);
     document.getElementById('contract-result').classList.add('hidden');
     document.getElementById('contract-loading').classList.remove('hidden');
 
     try {
-        const response = await fetch('/api/analyze-contract', {
-            method: 'POST',
-            body: formData
+        const res = await fetch('/api/analyze-contract', { method: 'POST', body: formData });
+        if (!res.ok) {
+            const errData = await res.json().catch(() => ({}));
+            throw new Error(errData.detail || `Server returned ${res.status}`);
+        }
+        const data = await res.json();
+
+        document.getElementById('contract-summary').textContent = data.summary || '';
+
+        const verdict = document.getElementById('contract-verdict');
+        if (data.is_safe_to_sign) {
+            verdict.textContent = '✓ Safe to Sign';
+            verdict.className = 'verdict-chip safe';
+        } else {
+            verdict.textContent = '✗ High Risk — Do Not Sign';
+            verdict.className = 'verdict-chip unsafe';
+        }
+
+        document.getElementById('contract-recommendation').textContent = data.overall_recommendation || '';
+
+        const container = document.getElementById('pitfalls-container');
+        container.innerHTML = '';
+        (data.pitfalls || []).forEach(p => {
+            const card = document.createElement('div');
+            card.className = `pitfall-card risk-${(p.risk_level || 'medium').toLowerCase()}`;
+            card.innerHTML = `
+                <div class="risk-badge">${p.risk_level || 'Medium'} Risk</div>
+                <h4>"${p.clause || ''}"</h4>
+                <p>${p.explanation || ''}</p>
+                <div class="mitigation"><i class="fa-solid fa-lightbulb"></i><span><strong>Fix:</strong> ${p.mitigation || ''}</span></div>
+            `;
+            container.appendChild(card);
         });
 
-        if (!response.ok) {
-            const errData = await response.json();
-            throw new Error(errData.detail || `Server returned ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        // Render Header
-        document.getElementById('contract-summary').textContent = data.summary;
-        
-        const verdictEl = document.getElementById('contract-verdict');
-        if (data.is_safe_to_sign) {
-            verdictEl.textContent = "SAFE TO SIGN";
-            verdictEl.className = "verdict-badge verdict-safe";
-        } else {
-            verdictEl.textContent = "DO NOT SIGN";
-            verdictEl.className = "verdict-badge verdict-danger";
-        }
-
-        document.getElementById('contract-recommendation').textContent = data.overall_recommendation;
-
-        // Render Pitfalls
-        const pitfallsContainer = document.getElementById('pitfalls-container');
-        pitfallsContainer.innerHTML = '';
-
-        if (data.pitfalls && data.pitfalls.length > 0) {
-            data.pitfalls.forEach(p => {
-                const card = document.createElement('div');
-                card.className = 'pitfall-card';
-                
-                let badgeClass = 'risk-low';
-                if (p.risk_level.toLowerCase() === 'high') badgeClass = 'risk-high';
-                if (p.risk_level.toLowerCase() === 'medium') badgeClass = 'risk-medium';
-
-                card.innerHTML = `
-                    <div class="pitfall-card-header">
-                        <span class="pitfall-clause">"${p.clause}"</span>
-                        <span class="risk-badge ${badgeClass}">${p.risk_level} RISK</span>
-                    </div>
-                    <p class="pitfall-explanation">${p.explanation}</p>
-                    <div class="pitfall-mitigation">
-                        <strong>Mitigation:</strong> ${p.mitigation}
-                    </div>
-                `;
-                pitfallsContainer.appendChild(card);
-            });
-        } else {
-            pitfallsContainer.innerHTML = '<p style="color: #10b981;">No critical pitfalls found. The contract appears standard.</p>';
-        }
-
-        // UI State: Done
         document.getElementById('contract-loading').classList.add('hidden');
         document.getElementById('contract-result').classList.remove('hidden');
+        document.getElementById('contract-result').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-    } catch (error) {
-        alert("Error analyzing contract: " + error.message);
+    } catch (err) {
         document.getElementById('contract-loading').classList.add('hidden');
+        alert('Error analyzing contract: ' + err.message);
+    } finally {
+        setLoadingLock(false);
+        document.getElementById('file-selected').classList.add('hidden');
+        window._selectedFile = null;
+        document.getElementById('contract-file-input').value = '';
     }
 }
+
+// ── Navbar shadow on scroll ─────────────────────────────────
+window.addEventListener('scroll', () => {
+    const nav = document.getElementById('navbar');
+    if (window.scrollY > 20) {
+        nav.style.boxShadow = '0 4px 40px rgba(0,0,0,0.5)';
+    } else {
+        nav.style.boxShadow = 'none';
+    }
+});
