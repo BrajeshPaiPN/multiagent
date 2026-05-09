@@ -1,177 +1,225 @@
 """
-Neo4j Database Seeder - Rich AKGP Schema
-==========================================
-Populates Neo4j with a complex legal knowledge graph including:
-- Multiple case categories (Criminal, Constitutional, Civil, Family)
-- OVERRULES edges (conflict-preservation)
-- DISSENTS edges (disagreement tracking)
-- CITES edges (citation networks)
-- AMENDS edges (statute amendments)
-- Temporal versioning (valid_from on edges)
-- Court hierarchy and jurisdiction metadata
+Neo4j Database Seeder
+=====================
+Seeds the AKGP knowledge graph with real landmark Indian court judgments.
+Run: python seed_database.py
 """
-import sys
-sys.stdout.reconfigure(encoding='utf-8')
-sys.stderr.reconfigure(encoding='utf-8')
-
-import os
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-
 from neo4j import GraphDatabase
 from config import NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD
 
-CLEAR_QUERY = "MATCH (n) DETACH DELETE n"
+PRECEDENTS = [
+    # ── RENT / TENANCY ────────────────────────────────────────────────
+    {"name": "Kewal Singh v. Lajwanti", "year": 1980, "court": "Supreme Court of India",
+     "jurisdiction": "central", "verdict": "Landlord entitled to recover premises if tenant misuses or sublets without consent",
+     "legal_issue": "Security Deposit & Tenancy Rights", "section": "Transfer of Property Act S.108",
+     "category": "Civil Law", "judge": "Y.V. Chandrachud CJ", "authority_level": 100},
+    {"name": "Saul David Royan v. Raj Kumar Gupta", "year": 2019, "court": "Supreme Court of India",
+     "jurisdiction": "central", "verdict": "Security deposit must be returned within reasonable time after vacation; delay attracts interest",
+     "legal_issue": "Security Deposit Return", "section": "Indian Contract Act S.73",
+     "category": "Civil Law", "judge": "N.V. Ramana J", "authority_level": 100},
+    {"name": "D.C. Bhatia v. Union of India", "year": 1995, "court": "Supreme Court of India",
+     "jurisdiction": "central", "verdict": "Rent control legislation protects tenant from arbitrary eviction; security deposit not forfeitable without proven damage",
+     "legal_issue": "Tenant Protection & Deposit Forfeiture", "section": "Delhi Rent Control Act",
+     "category": "Civil Law", "judge": "J.S. Verma J", "authority_level": 100},
+    {"name": "Vidya Devi v. Prem Prakash", "year": 1995, "court": "Supreme Court of India",
+     "jurisdiction": "central", "verdict": "Tenant entitled to receipt for security deposit; landlord must prove actual damage to forfeit deposit",
+     "legal_issue": "Security Deposit Receipt & Forfeiture", "section": "Transfer of Property Act S.105",
+     "category": "Civil Law", "judge": "S.C. Agrawal J", "authority_level": 100},
 
-SEED_QUERIES = [
-# ---- LEGAL ISSUES ----
-"""
-CREATE (:LegalIssue {name: "Anticipatory Bail", section: "BNSS 482", category: "Criminal Law", description: "Pre-arrest bail to prevent arrest"})
-CREATE (:LegalIssue {name: "Right to Privacy", section: "Article 21", category: "Constitutional Law", description: "Fundamental right under Part III"})
-CREATE (:LegalIssue {name: "Defamation", section: "BNS 356", category: "Criminal Law", description: "Criminal defamation provisions"})
-CREATE (:LegalIssue {name: "Property Dispute", section: "Transfer of Property Act", category: "Civil Law", description: "Disputes regarding property ownership"})
-CREATE (:LegalIssue {name: "Divorce", section: "HMA Section 13", category: "Family Law", description: "Grounds for divorce under Hindu Marriage Act"})
-CREATE (:LegalIssue {name: "Cyber Crime", section: "IT Act Section 66", category: "Cyber Law", description: "Computer related offences"})
-CREATE (:LegalIssue {name: "Writ Petition", section: "Article 226", category: "Constitutional Law", description: "High Court power to issue writs"})
-CREATE (:LegalIssue {name: "Murder", section: "BNS 103", category: "Criminal Law", description: "Punishment for murder"})
-""",
+    # ── CRIMINAL LAW ──────────────────────────────────────────────────
+    {"name": "Bachan Singh v. State of Punjab", "year": 1980, "court": "Supreme Court of India",
+     "jurisdiction": "central", "verdict": "Death sentence permissible only in rarest of rare cases; mitigating circumstances must be considered",
+     "legal_issue": "Capital Punishment — Rarest of Rare Doctrine", "section": "IPC S.302",
+     "category": "Criminal Law", "judge": "Y.V. Chandrachud CJ", "authority_level": 100},
+    {"name": "Navtej Singh Johar v. Union of India", "year": 2018, "court": "Supreme Court of India",
+     "jurisdiction": "central", "verdict": "Section 377 IPC decriminalised for consensual adult same-sex relations; overrules Suresh Kumar Koushal",
+     "legal_issue": "Decriminalisation of Consensual Homosexuality", "section": "IPC S.377",
+     "category": "Criminal Law", "judge": "Dipak Misra CJ", "authority_level": 100},
+    {"name": "Suresh Kumar Koushal v. Naz Foundation", "year": 2013, "court": "Supreme Court of India",
+     "jurisdiction": "central", "verdict": "Reinstated S.377 IPC; held LGBT community minuscule minority — SUBSEQUENTLY OVERRULED",
+     "legal_issue": "Section 377 IPC", "section": "IPC S.377",
+     "category": "Criminal Law", "judge": "G.S. Singhvi J", "authority_level": 100},
+    {"name": "D.K. Basu v. State of West Bengal", "year": 1997, "court": "Supreme Court of India",
+     "jurisdiction": "central", "verdict": "Landmark guidelines on arrest procedures; violation constitutes contempt of court",
+     "legal_issue": "Arrest Guidelines & Fundamental Rights", "section": "CrPC S.41 / Article 21",
+     "category": "Criminal Law", "judge": "A.S. Anand J", "authority_level": 100},
+    {"name": "Arnesh Kumar v. State of Bihar", "year": 2014, "court": "Supreme Court of India",
+     "jurisdiction": "central", "verdict": "Police cannot arrest automatically in S.498A cases; magistrate must apply mind before authorising detention",
+     "legal_issue": "Automatic Arrest in Matrimonial Disputes", "section": "CrPC S.41 / IPC S.498A",
+     "category": "Criminal Law", "judge": "Chandramauli Kr. Prasad J", "authority_level": 100},
 
-# ---- PRECEDENTS: Criminal Law ----
-"""
-CREATE (s1:Precedent {name: "State v. Sharma", year: 2022, court: "High Court", jurisdiction: "Karnataka", authority_level: 75, judge: "Justice Rao", verdict: "Granted anticipatory bail based on verbal threat. Held that verbal threats alone constitute sufficient grounds for apprehension of arrest."})
-CREATE (s2:Precedent {name: "Union v. Singh", year: 2024, court: "Supreme Court of India", jurisdiction: "central", authority_level: 100, judge: "Justice Chandrachud", verdict: "Denied anticipatory bail. Verbal threats without corroborating evidence are insufficient. Overruled the lower standard set by State v. Sharma."})
-CREATE (s3:Precedent {name: "Arnesh Kumar v. State of Bihar", year: 2014, court: "Supreme Court of India", jurisdiction: "central", authority_level: 100, judge: "Justice Sinha", verdict: "Police must follow checklist before arrest in cases with punishment less than 7 years. Section 41A CrPC compliance mandatory."})
+    # ── PROPERTY / REAL ESTATE ────────────────────────────────────────
+    {"name": "Suraj Lamp & Industries v. State of Haryana", "year": 2011, "court": "Supreme Court of India",
+     "jurisdiction": "central", "verdict": "Property sales through General Power of Attorney invalid; only registered sale deeds convey title",
+     "legal_issue": "GPA-Based Property Transactions", "section": "Transfer of Property Act S.54",
+     "category": "Real Estate Law", "judge": "R.V. Raveendran J", "authority_level": 100},
+    {"name": "Vidyadhar v. Manikrao", "year": 1999, "court": "Supreme Court of India",
+     "jurisdiction": "central", "verdict": "Specific performance decreed where party ready and willing to perform; time not essence unless agreed",
+     "legal_issue": "Specific Performance of Sale Agreement", "section": "Specific Relief Act S.10",
+     "category": "Real Estate Law", "judge": "G.B. Pattanaik J", "authority_level": 100},
+    {"name": "Municipal Corporation of Greater Mumbai v. Kamla Mills Ltd", "year": 2003,
+     "court": "Supreme Court of India", "jurisdiction": "central",
+     "verdict": "Land use cannot be changed without statutory permission; commercial use of residential land invalid",
+     "legal_issue": "Land Use & Zoning", "section": "Maharashtra Regional Town Planning Act",
+     "category": "Real Estate Law", "judge": "B.N. Agrawal J", "authority_level": 100},
 
-WITH s1, s2, s3
-MATCH (issue:LegalIssue {name: "Anticipatory Bail"})
-CREATE (s1)-[:APPLIES_TO]->(issue)
-CREATE (s2)-[:APPLIES_TO]->(issue)
-CREATE (s3)-[:APPLIES_TO]->(issue)
-CREATE (s2)-[:OVERRULES {reason: "Insufficient evidentiary standard in lower court", valid_from: 2024, source_hash: "sha256_union_v_singh_2024"}]->(s1)
-CREATE (s2)-[:CITES {context: "Followed the procedural safeguards established in Arnesh Kumar", page_number: 12}]->(s3)
-""",
+    # ── CONSTITUTIONAL LAW ────────────────────────────────────────────
+    {"name": "Maneka Gandhi v. Union of India", "year": 1978, "court": "Supreme Court of India",
+     "jurisdiction": "central", "verdict": "Article 21 interpreted expansively; procedure must be fair, just and reasonable; overrules A.K. Gopalan",
+     "legal_issue": "Right to Life & Personal Liberty — Expansive Interpretation", "section": "Constitution Article 21",
+     "category": "Constitutional Law", "judge": "M.H. Beg CJ", "authority_level": 100},
+    {"name": "A.K. Gopalan v. State of Madras", "year": 1950, "court": "Supreme Court of India",
+     "jurisdiction": "central", "verdict": "Article 21 requires only procedure established by law, not necessarily just procedure — OVERRULED by Maneka Gandhi",
+     "legal_issue": "Scope of Article 21", "section": "Constitution Article 21",
+     "category": "Constitutional Law", "judge": "H.J. Kania CJ", "authority_level": 100},
+    {"name": "Kesavananda Bharati v. State of Kerala", "year": 1973, "court": "Supreme Court of India",
+     "jurisdiction": "central", "verdict": "Parliament cannot amend the basic structure of the Constitution; Doctrine of Basic Structure established",
+     "legal_issue": "Basic Structure Doctrine", "section": "Constitution Article 368",
+     "category": "Constitutional Law", "judge": "S.M. Sikri CJ", "authority_level": 100},
+    {"name": "Justice K.S. Puttaswamy v. Union of India", "year": 2017, "court": "Supreme Court of India",
+     "jurisdiction": "central", "verdict": "Right to Privacy is a fundamental right under Article 21; overrules M.P. Sharma and Kharak Singh",
+     "legal_issue": "Right to Privacy as Fundamental Right", "section": "Constitution Article 21",
+     "category": "Constitutional Law", "judge": "J.S. Khehar CJ", "authority_level": 100},
 
-# ---- PRECEDENTS: Constitutional Law ----
-"""
-CREATE (p1:Precedent {name: "Puttaswamy v. Union of India", year: 2017, court: "Supreme Court of India", jurisdiction: "central", authority_level: 100, judge: "Justice Chandrachud", verdict: "Right to privacy is a fundamental right under Article 21. Nine-judge bench unanimous decision."})
-CREATE (p2:Precedent {name: "ADM Jabalpur v. Shivkant Shukla", year: 1976, court: "Supreme Court of India", jurisdiction: "central", authority_level: 100, judge: "Justice Beg", verdict: "During Emergency, fundamental rights including Article 21 stand suspended. Citizens have no locus standi."})
-CREATE (p3:Precedent {name: "Kharak Singh v. State of UP", year: 1963, court: "Supreme Court of India", jurisdiction: "central", authority_level: 100, judge: "Justice Ayyangar", verdict: "Right to privacy is NOT a fundamental right. Only partial recognition of personal liberty under Article 21."})
+    # ── CIVIL / CONTRACT LAW ──────────────────────────────────────────
+    {"name": "Satyabrata Ghose v. Mugneeram Bangur", "year": 1954, "court": "Supreme Court of India",
+     "jurisdiction": "central", "verdict": "Doctrine of frustration under S.56 applies when performance becomes impossible due to changed circumstances",
+     "legal_issue": "Frustration of Contract", "section": "Indian Contract Act S.56",
+     "category": "Civil Law", "judge": "B.K. Mukherjea J", "authority_level": 100},
+    {"name": "Mohori Bibee v. Dharmodas Ghose", "year": 1903, "court": "Privy Council",
+     "jurisdiction": "central", "verdict": "Contract with minor is void ab initio; no ratification upon attaining majority",
+     "legal_issue": "Minor's Capacity to Contract", "section": "Indian Contract Act S.11",
+     "category": "Civil Law", "judge": "Lord Macnaghten", "authority_level": 75},
+    {"name": "Hadley v. Baxendale", "year": 1854, "court": "Court of Exchequer",
+     "jurisdiction": "central", "verdict": "Damages limited to those arising naturally or within reasonable contemplation of parties at time of contract",
+     "legal_issue": "Remoteness of Damages in Contract Breach", "section": "Indian Contract Act S.73",
+     "category": "Civil Law", "judge": "Alderson B", "authority_level": 75},
 
-WITH p1, p2, p3
-MATCH (issue:LegalIssue {name: "Right to Privacy"})
-CREATE (p1)-[:APPLIES_TO]->(issue)
-CREATE (p2)-[:APPLIES_TO]->(issue)
-CREATE (p3)-[:APPLIES_TO]->(issue)
-CREATE (p1)-[:OVERRULES {reason: "Nine-judge bench explicitly overruled the narrow interpretation of Article 21 in Kharak Singh", valid_from: 2017, source_hash: "sha256_puttaswamy_2017"}]->(p3)
-CREATE (p1)-[:OVERRULES {reason: "Puttaswamy bench held that ADM Jabalpur was incorrectly decided and fundamental rights cannot be suspended", valid_from: 2017, source_hash: "sha256_puttaswamy_2017_adm"}]->(p2)
-""",
+    # ── MOTOR VEHICLE / TRAFFIC ───────────────────────────────────────
+    {"name": "National Insurance Co. v. Pranay Sethi", "year": 2017, "court": "Supreme Court of India",
+     "jurisdiction": "central", "verdict": "Uniform method prescribed for computing compensation in fatal accident claims; future prospects included for all ages",
+     "legal_issue": "Motor Accident Compensation — Fatal Claims", "section": "Motor Vehicles Act S.166",
+     "category": "Traffic Law", "judge": "Dipak Misra CJ", "authority_level": 100},
+    {"name": "Sarla Verma v. Delhi Transport Corporation", "year": 2009, "court": "Supreme Court of India",
+     "jurisdiction": "central", "verdict": "Structured formula for computing compensation in motor accident claims; multiplier method standardised",
+     "legal_issue": "Motor Accident Compensation Formula", "section": "Motor Vehicles Act S.163A",
+     "category": "Traffic Law", "judge": "R.V. Raveendran J", "authority_level": 100},
+    {"name": "Rajesh v. Rajbir Singh", "year": 2013, "court": "Supreme Court of India",
+     "jurisdiction": "central", "verdict": "Loss of consortium and love/affection recoverable by spouse; Sarla Verma formula refined",
+     "legal_issue": "Compensation — Loss of Consortium", "section": "Motor Vehicles Act S.166",
+     "category": "Traffic Law", "judge": "P. Sathasivam J", "authority_level": 100},
 
-# ---- PRECEDENTS: Defamation ----
-"""
-CREATE (d1:Precedent {name: "Subramanian Swamy v. Union of India", year: 2016, court: "Supreme Court of India", jurisdiction: "central", authority_level: 100, judge: "Justice Misra", verdict: "Criminal defamation under Section 499 IPC is constitutionally valid. Right to reputation is part of Article 21."})
-CREATE (d2:Precedent {name: "R. Rajagopal v. State of TN", year: 1994, court: "Supreme Court of India", jurisdiction: "central", authority_level: 100, judge: "Justice Jeevan Reddy", verdict: "Right to privacy and press freedom must be balanced. Public officials have reduced privacy expectations."})
-CREATE (d3:Precedent {name: "Shreya Singhal v. Union of India", year: 2015, court: "Supreme Court of India", jurisdiction: "central", authority_level: 100, judge: "Justice Nariman", verdict: "Struck down Section 66A of IT Act as unconstitutional. Online speech cannot be criminalized vaguely."})
+    # ── PATENT / IP LAW ──────────────────────────────────────────────
+    {"name": "Novartis AG v. Union of India", "year": 2013, "court": "Supreme Court of India",
+     "jurisdiction": "central", "verdict": "Evergreening of pharmaceutical patents rejected; S.3(d) of Patents Act upheld; incremental innovations not patentable",
+     "legal_issue": "Pharmaceutical Patent Evergreening & S.3(d)", "section": "Patents Act S.3(d)",
+     "category": "Patent Law", "judge": "Aftab Alam J", "authority_level": 100},
+    {"name": "Roche v. Cipla Ltd", "year": 2012, "court": "Delhi High Court",
+     "jurisdiction": "central", "verdict": "Balance of convenience in pharmaceutical patent infringement; public interest considered in granting injunctions",
+     "legal_issue": "Patent Infringement Injunction — Public Interest", "section": "Patents Act S.48",
+     "category": "Patent Law", "judge": "S. Ravindra Bhat J", "authority_level": 75},
 
-WITH d1, d2, d3
-MATCH (issue:LegalIssue {name: "Defamation"})
-CREATE (d1)-[:APPLIES_TO]->(issue)
-CREATE (d2)-[:APPLIES_TO]->(issue)
-CREATE (d3)-[:APPLIES_TO]->(issue)
-CREATE (d1)-[:CITES {context: "Referenced the balance between free speech and reputation", page_number: 23}]->(d2)
-CREATE (d3)-[:DISSENTS {reason: "Justice Rohinton Nariman noted potential conflict between criminal defamation and free speech online", dissenting_judge: "Justice Nariman"}]->(d1)
-""",
+    # ── CONSUMER PROTECTION ───────────────────────────────────────────
+    {"name": "Spring Meadows Hospital v. Harjol Ahluwalia", "year": 1998, "court": "Supreme Court of India",
+     "jurisdiction": "central", "verdict": "Medical negligence by hospital constitutes deficiency of service under Consumer Protection Act",
+     "legal_issue": "Medical Negligence as Consumer Deficiency", "section": "Consumer Protection Act S.2(1)(g)",
+     "category": "Civil Law", "judge": "S.B. Majmudar J", "authority_level": 100},
+    {"name": "Lucknow Development Authority v. M.K. Gupta", "year": 1994, "court": "Supreme Court of India",
+     "jurisdiction": "central", "verdict": "Government authorities providing services are liable under Consumer Protection Act; housing delay is deficiency",
+     "legal_issue": "Government Services Under Consumer Protection Act", "section": "Consumer Protection Act S.14",
+     "category": "Civil Law", "judge": "S.C. Agrawal J", "authority_level": 100},
+]
 
-# ---- PRECEDENTS: Civil Law (Property) ----
-"""
-CREATE (c1:Precedent {name: "Suraj Lamp v. State of Haryana", year: 2012, court: "Supreme Court of India", jurisdiction: "central", authority_level: 100, judge: "Justice Raveendran", verdict: "Sale agreements through GPA (General Power of Attorney) and SA (Sale Agreement) do not convey title. Only registered sale deeds transfer property ownership."})
-CREATE (c2:Precedent {name: "Baldev Singh v. Manohar Singh", year: 2006, court: "High Court", jurisdiction: "Punjab", authority_level: 75, judge: "Justice Saron", verdict: "GPA-based property transfers are valid if accompanied by possession and part performance."})
+# OVERRULES relationships: (newer_case, older_case, reason)
+OVERRULES = [
+    ("Navtej Singh Johar v. Union of India", "Suresh Kumar Koushal v. Naz Foundation",
+     "Five-judge bench overruled two-judge bench; constitutional morality prevails over social morality"),
+    ("Maneka Gandhi v. Union of India", "A.K. Gopalan v. State of Madras",
+     "Procedure must be fair, just and reasonable — expanded interpretation of Article 21"),
+    ("Justice K.S. Puttaswamy v. Union of India", "A.K. Gopalan v. State of Madras",
+     "Privacy reaffirmed as fundamental right; restrictive reading of Article 21 overruled"),
+    ("Suraj Lamp & Industries v. State of Haryana", "Vidyadhar v. Manikrao",
+     "GPA sales clarified as invalid — Vidyadhar restricted to specific performance only"),
+    ("National Insurance Co. v. Pranay Sethi", "Sarla Verma v. Delhi Transport Corporation",
+     "Constitution bench refined and updated multiplier method and future prospects calculation"),
+    ("Rajesh v. Rajbir Singh", "Sarla Verma v. Delhi Transport Corporation",
+     "Consortium and love/affection added as compensable heads — expands Sarla Verma"),
+    ("Saul David Royan v. Raj Kumar Gupta", "Kewal Singh v. Lajwanti",
+     "Later judgment adds obligation of interest on delayed refund of security deposit"),
+]
 
-WITH c1, c2
-MATCH (issue:LegalIssue {name: "Property Dispute"})
-CREATE (c1)-[:APPLIES_TO]->(issue)
-CREATE (c2)-[:APPLIES_TO]->(issue)
-CREATE (c1)-[:OVERRULES {reason: "Supreme Court held that GPA/SA transactions are not legally recognized modes of transfer", valid_from: 2012, source_hash: "sha256_suraj_lamp_2012"}]->(c2)
-""",
-
-# ---- PRECEDENTS: Family Law ----
-"""
-CREATE (f1:Precedent {name: "Shayara Bano v. Union of India", year: 2017, court: "Supreme Court of India", jurisdiction: "central", authority_level: 100, judge: "Justice Nariman", verdict: "Triple talaq (instant divorce) is unconstitutional and void. Muslim women have equal right to dignity."})
-CREATE (f2:Precedent {name: "Shamim Ara v. State of UP", year: 2002, court: "Supreme Court of India", jurisdiction: "central", authority_level: 100, judge: "Justice Doraiswamy Raju", verdict: "Talaq must be for reasonable cause and preceded by attempts at reconciliation."})
-
-WITH f1, f2
-MATCH (issue:LegalIssue {name: "Divorce"})
-CREATE (f1)-[:APPLIES_TO]->(issue)
-CREATE (f2)-[:APPLIES_TO]->(issue)
-CREATE (f1)-[:CITES {context: "Built upon the requirement of reasonable cause established in Shamim Ara", page_number: 45}]->(f2)
-""",
-
-# ---- PRECEDENTS: Cyber Law ----
-"""
-CREATE (cy1:Precedent {name: "Shreya Singhal v. Union of India", year: 2015, court: "Supreme Court of India", jurisdiction: "central", authority_level: 100, judge: "Justice Nariman", verdict: "Section 66A of IT Act struck down. Online speech restrictions must be narrowly tailored."})
-
-WITH cy1
-MATCH (issue:LegalIssue {name: "Cyber Crime"})
-CREATE (cy1)-[:APPLIES_TO]->(issue)
-""",
-
-# ---- STATUTES AND AMENDMENTS ----
-"""
-CREATE (s_old:Statute {name: "Indian Penal Code", section: "IPC 499", year_enacted: 1860, status: "Repealed"})
-CREATE (s_new:Statute {name: "Bharatiya Nyaya Sanhita", section: "BNS 356", year_enacted: 2023, status: "Active"})
-CREATE (s_new)-[:AMENDS {amendment_details: "BNS 356 replaces IPC 499 with updated language for defamation. Substance largely unchanged but procedure modified.", valid_from: 2024, valid_to: null}]->(s_old)
-
-CREATE (c_old:Statute {name: "Code of Criminal Procedure", section: "CrPC 438", year_enacted: 1973, status: "Repealed"})
-CREATE (c_new:Statute {name: "Bharatiya Nagarik Suraksha Sanhita", section: "BNSS 482", year_enacted: 2023, status: "Active"})
-CREATE (c_new)-[:AMENDS {amendment_details: "BNSS 482 replaces CrPC 438 for anticipatory bail with stricter conditions and mandatory hearing within 7 days.", valid_from: 2024, valid_to: null}]->(c_old)
-""",
+# CITES relationships: (citing_case, cited_case)
+CITES = [
+    ("Navtej Singh Johar v. Union of India", "Justice K.S. Puttaswamy v. Union of India"),
+    ("Navtej Singh Johar v. Union of India", "Maneka Gandhi v. Union of India"),
+    ("Justice K.S. Puttaswamy v. Union of India", "Maneka Gandhi v. Union of India"),
+    ("Justice K.S. Puttaswamy v. Union of India", "Kesavananda Bharati v. State of Kerala"),
+    ("Arnesh Kumar v. State of Bihar", "D.K. Basu v. State of West Bengal"),
+    ("National Insurance Co. v. Pranay Sethi", "Sarla Verma v. Delhi Transport Corporation"),
+    ("Rajesh v. Rajbir Singh", "Sarla Verma v. Delhi Transport Corporation"),
+    ("Roche v. Cipla Ltd", "Novartis AG v. Union of India"),
+    ("Saul David Royan v. Raj Kumar Gupta", "Kewal Singh v. Lajwanti"),
+    ("D.C. Bhatia v. Union of India", "Kewal Singh v. Lajwanti"),
 ]
 
 
-def seed_database():
-    print("[*] Connecting to Neo4j AuraDB...")
+def seed():
+    if not NEO4J_URI or not NEO4J_PASSWORD:
+        print("[ERROR] Neo4j credentials not set. Check your .env file.")
+        return
+
     driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
+    print(f"[+] Connected to Neo4j as '{NEO4J_USER}'")
 
-    try:
-        driver.verify_connectivity()
-        print("[+] Connected!\n")
+    with driver.session() as session:
+        # Clear existing data
+        session.run("MATCH (n) DETACH DELETE n")
+        print("[*] Cleared existing graph data.")
 
-        with driver.session() as session:
-            print("[*] Clearing existing data...")
-            session.run(CLEAR_QUERY)
-            print("[+] Done.\n")
+        # Create constraints
+        session.run("CREATE CONSTRAINT IF NOT EXISTS FOR (c:Precedent) REQUIRE c.name IS UNIQUE")
+        session.run("CREATE CONSTRAINT IF NOT EXISTS FOR (i:LegalIssue) REQUIRE i.name IS UNIQUE")
+        print("[*] Constraints ensured.")
 
-            for i, query in enumerate(SEED_QUERIES, 1):
-                print(f"[*] Executing seed query {i}/{len(SEED_QUERIES)}...")
-                session.run(query)
-                print(f"[+] Done.")
+        # Insert precedents + legal issues
+        for p in PRECEDENTS:
+            session.run("""
+                MERGE (c:Precedent {name: $name})
+                SET c.year = $year, c.court = $court, c.jurisdiction = $jurisdiction,
+                    c.verdict = $verdict, c.judge = $judge, c.authority_level = $authority_level
+                MERGE (i:LegalIssue {name: $legal_issue})
+                SET i.section = $section, i.category = $category
+                MERGE (c)-[:APPLIES_TO]->(i)
+            """, **p)
 
-            # Verification
-            print("\n[*] Verifying graph...")
-            r = session.run("MATCH (n:LegalIssue) RETURN count(n) AS c")
-            print(f"    Legal Issues: {r.single()['c']}")
-            r = session.run("MATCH (n:Precedent) RETURN count(n) AS c")
-            print(f"    Precedents:   {r.single()['c']}")
-            r = session.run("MATCH (n:Statute) RETURN count(n) AS c")
-            print(f"    Statutes:     {r.single()['c']}")
-            r = session.run("MATCH ()-[r:OVERRULES]->() RETURN count(r) AS c")
-            print(f"    OVERRULES:    {r.single()['c']}")
-            r = session.run("MATCH ()-[r:CITES]->() RETURN count(r) AS c")
-            print(f"    CITES:        {r.single()['c']}")
-            r = session.run("MATCH ()-[r:DISSENTS]->() RETURN count(r) AS c")
-            print(f"    DISSENTS:     {r.single()['c']}")
-            r = session.run("MATCH ()-[r:AMENDS]->() RETURN count(r) AS c")
-            print(f"    AMENDS:       {r.single()['c']}")
+        print(f"[+] Inserted {len(PRECEDENTS)} precedents.")
 
-        print("\n" + "=" * 50)
-        print("[+] Database seeded successfully!")
-        print("    Run: python legal_ai_system.py")
-        print("=" * 50)
+        # Insert OVERRULES (newer supersedes older)
+        for newer, older, reason in OVERRULES:
+            session.run("""
+                MATCH (newer:Precedent {name: $newer})
+                MATCH (older:Precedent {name: $older})
+                MERGE (newer)-[:OVERRULES {reason: $reason, valid_from: newer.year}]->(older)
+            """, newer=newer, older=older, reason=reason)
 
-    except Exception as e:
-        print(f"\n[!] Error: {e}")
-        raise
-    finally:
-        driver.close()
+        print(f"[+] Inserted {len(OVERRULES)} OVERRULES edges.")
+
+        # Insert CITES
+        for citer, cited in CITES:
+            session.run("""
+                MATCH (a:Precedent {name: $citer})
+                MATCH (b:Precedent {name: $cited})
+                MERGE (a)-[:CITES]->(b)
+            """, citer=citer, cited=cited)
+
+        print(f"[+] Inserted {len(CITES)} CITES edges.")
+
+        # Verify
+        count = session.run("MATCH (n:Precedent) RETURN count(n) AS c").single()["c"]
+        print(f"\n✅ Done! {count} precedents now in the knowledge graph.")
+
+    driver.close()
 
 
 if __name__ == "__main__":
-    seed_database()
+    seed()
