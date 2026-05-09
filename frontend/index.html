@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nyaya AI | Legal Intelligence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <!-- Use marked.js for parsing Markdown from the LLM -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="background-mesh"></div>
+
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fa-solid fa-scale-balanced"></i>
+            <span>Nyaya AI</span>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="active" onclick="switchTab('query', event)">Ask Legal Engine</a>
+            <a href="#" onclick="switchTab('contract', event)">Contract Analyzer</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        
+        <!-- Tab 1: Legal Intelligence Query -->
+        <section id="query-section" class="tab-content active">
+            <div class="hero">
+                <h1>Advanced Legal Intelligence</h1>
+                <p>Multi-Agent parallel processing powered by the Indian Constitution & Precedents.</p>
+            </div>
+            
+            <div class="search-box glass-panel">
+                <textarea id="legal-query" placeholder="Describe your legal situation... (e.g. 'I was involved in a car crash while drunk and the other party is suing me for damages.')"></textarea>
+                <button id="btn-query" onclick="submitQuery()">
+                    <span>Synthesize Opinion</span>
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </button>
+            </div>
+
+            <div id="query-loading" class="loading-state hidden">
+                <div class="spinner"></div>
+                <p>Agents are researching, verifying precedents, and synthesizing...</p>
+            </div>
+
+            <div id="query-result" class="result-box glass-panel hidden">
+                <div class="result-header">
+                    <h2>Master Memorandum</h2>
+                    <div id="routed-domains" class="domain-tags"></div>
+                </div>
+                <div class="pipeline-stats">
+                    <div class="stat"><i class="fa-solid fa-check-circle" style="color: #4ade80;"></i> <span id="stat-verified">0</span> Verified Cases</div>
+                    <div class="stat"><i class="fa-solid fa-triangle-exclamation" style="color: #fbbf24;"></i> <span id="stat-cautioned">0</span> Cautioned</div>
+                    <div class="stat"><i class="fa-solid fa-ban" style="color: #f87171;"></i> <span id="stat-rejected">0</span> Bad Law Rejected</div>
+                    <div class="stat"><i class="fa-solid fa-rotate-left" style="color: #60a5fa;"></i> <span id="stat-revisions">0</span> Critic Revisions</div>
+                </div>
+                <div id="final-draft" class="markdown-content"></div>
+            </div>
+        </section>
+
+        <!-- Tab 2: Contract Analyzer -->
+        <section id="contract-section" class="tab-content hidden">
+            <div class="hero">
+                <h1>AI Contract Analyzer</h1>
+                <p>Upload any lease, NDA, or agreement. We'll find the hidden risks.</p>
+            </div>
+
+            <div class="upload-box glass-panel" id="drop-zone" onclick="document.getElementById('file-input').click()">
+                <i class="fa-solid fa-file-contract"></i>
+                <h3>Drag & Drop your PDF/Image here</h3>
+                <p>or click to browse files</p>
+                <input type="file" id="file-input" accept=".pdf,.png,.jpg,.jpeg" hidden>
+            </div>
+
+            <div id="contract-loading" class="loading-state hidden">
+                <div class="spinner"></div>
+                <p>Extracting text and identifying hidden pitfalls...</p>
+            </div>
+
+            <div id="contract-result" class="result-box glass-panel hidden">
+                <div class="contract-header">
+                    <div style="flex:1;">
+                        <h2>Contract Analysis Report</h2>
+                        <p id="contract-summary" class="text-gray" style="margin-top: 5px;"></p>
+                    </div>
+                    <div id="contract-verdict" class="verdict-badge"></div>
+                </div>
+
+                <div class="recommendation-box">
+                    <h3>Overall Recommendation</h3>
+                    <p id="contract-recommendation"></p>
+                </div>
+
+                <h3 class="pitfalls-title">Critical Pitfalls & Risks</h3>
+                <div id="pitfalls-container" class="pitfalls-grid"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
