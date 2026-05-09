@@ -36,13 +36,13 @@ if GROQ_API_KEY:
 # LLM MODELS (Heterogeneous)
 # ==========================================
 # Router Agent: Fast domain classification
-LLM_ROUTER = "llama-3.3-70b-versatile"
+LLM_ROUTER = "llama3-8b-8192"
 
 # Agent 1 (Analyzer): Fast structured extraction
-LLM_ANALYZER = "llama-3.3-70b-versatile" 
+LLM_ANALYZER = "llama3-8b-8192" 
 
 # Agent 5 (Synthesizer): Long-context legal reasoning
-LLM_SYNTHESIZER = "llama-3.3-70b-versatile"
+LLM_SYNTHESIZER = "llama3-8b-8192"
 
 # Fallback/General Model
 GEMINI_MODEL = "gemini-2.5-flash"

@@ -45,13 +45,12 @@ def node_router(state: dict) -> dict:
 
         prompt = (
             "You are a legal query router. Your job is to read the user's "
-            "legal question and decide which specialists should handle it.\n"
-            "If the query involves multiple domains (e.g., a car crash causing both "
-            "civil damage and criminal charges), select ALL applicable domains.\n\n"
+            "legal question and decide the SINGLE MOST RELEVANT specialist to handle it.\n"
+            "To prevent API rate limits, you MUST choose EXACTLY ONE domain.\n\n"
             "Valid domains:\n"
             "  • 'criminal', 'civil', 'patents', 'real_estate', 'traffic', 'general'\n\n"
             f"User query: \"{state['user_query']}\"\n\n"
-            "Respond with the list of domains and a brief reasoning."
+            "Respond with EXACTLY ONE domain in the list, and a brief reasoning."
         )
 
         result = structured_llm.invoke(prompt)
@@ -60,8 +59,12 @@ def node_router(state: dict) -> dict:
         # Validate domains
         valid_domains = {"criminal", "civil", "patents", "real_estate", "traffic", "general"}
         domains = [d for d in domains if d in valid_domains]
+        
+        # Enforce single domain
         if not domains:
             domains = ["general"]
+        else:
+            domains = [domains[0]]
 
         print(f"    Routed to: {domains}")
         print(f"    Reason:    {result.reasoning}")
