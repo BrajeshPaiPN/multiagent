@@ -6,20 +6,20 @@ Indian Constitution, IPC/BNS, and standard legal textbooks.
 """
 import os
 from langchain_community.vectorstores import FAISS
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_core.documents import Document
 
 RAG_DB_PATH = os.path.join(os.path.dirname(__file__), "faiss_index")
 
-# We use a lightweight, fast, local embedding model
-# Initialized lazily to prevent server boot timeouts.
+# We use Google's Embedding API because local HuggingFace/PyTorch models
+# require >1GB of RAM, which crashes Render's Free Tier (512MB RAM limit).
 _EMBEDDINGS = None
 
 def get_embeddings():
     global _EMBEDDINGS
     if _EMBEDDINGS is None:
-        print("[RAG] Loading Embedding Model...")
-        _EMBEDDINGS = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+        print("[RAG] Loading Google Embedding Model API...")
+        _EMBEDDINGS = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
     return _EMBEDDINGS
 
 # Mock Dataset: Excerpts from Indian Constitution and Legal Textbooks
