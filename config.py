@@ -26,6 +26,14 @@ NEO4J_URI = os.environ.get("NEO4J_URI", "")
 NEO4J_USER = os.environ.get("NEO4J_USER", "neo4j")
 NEO4J_PASSWORD = os.environ.get("NEO4J_PASSWORD", "")
 
+# Validate critical credentials on startup
+if not GROQ_API_KEY:
+    print("[WARN] GROQ_API_KEY is not set! LLM calls will fail.")
+if not GOOGLE_API_KEY:
+    print("[WARN] GOOGLE_API_KEY is not set! RAG Embeddings will fail.")
+if not NEO4J_URI or not NEO4J_PASSWORD:
+    print("[WARN] NEO4J credentials incomplete. Graph queries will be skipped.")
+
 # Set for langchain
 if GOOGLE_API_KEY:
     os.environ["GOOGLE_API_KEY"] = GOOGLE_API_KEY
