@@ -32,6 +32,7 @@ from agents.agent_default import node_default_agent
 from agents.master_synthesizer import node_master_synthesizer
 from agents.critic import node_critic
 from agents.rag_retriever import node_rag_retriever
+from agents.hallucination_verifier import node_hallucination_verifier
 
 
 class LegalState(TypedDict):
@@ -45,6 +46,9 @@ class LegalState(TypedDict):
     
     # Combined outputs
     final_draft: str
+    
+    # Hallucination verification
+    hallucination_summary: dict
     
     # Critic Loop
     critic_feedback: str
@@ -76,6 +80,7 @@ def build_legal_graph():
     workflow.add_node("default_agent", node_default_agent)
     
     workflow.add_node("master_synthesizer", node_master_synthesizer)
+    workflow.add_node("hallucination_verifier", node_hallucination_verifier)
     workflow.add_node("critic", node_critic)
 
     # ── Edges ─────────────────────────────────────────────────────────────
@@ -96,13 +101,14 @@ def build_legal_graph():
         },
     )
 
-    # Fan-in
-    workflow.add_edge("criminal_agent", "master_synthesizer")
-    workflow.add_edge("civil_agent", "master_synthesizer")
-    workflow.add_edge("patents_agent", "master_synthesizer")
-    workflow.add_edge("real_estate_agent", "master_synthesizer")
-    workflow.add_edge("traffic_agent", "master_synthesizer")
-    workflow.add_edge("default_agent", "master_synthesizer")
+    # Fan-in: experts → hallucination verifier → synthesizer
+    workflow.add_edge("criminal_agent", "hallucination_verifier")
+    workflow.add_edge("civil_agent", "hallucination_verifier")
+    workflow.add_edge("patents_agent", "hallucination_verifier")
+    workflow.add_edge("real_estate_agent", "hallucination_verifier")
+    workflow.add_edge("traffic_agent", "hallucination_verifier")
+    workflow.add_edge("default_agent", "hallucination_verifier")
+    workflow.add_edge("hallucination_verifier", "master_synthesizer")
 
     # Synthesis -> Critic
     workflow.add_edge("master_synthesizer", "critic")
@@ -128,6 +134,7 @@ def create_initial_state(query: str, mode: str = "citizen") -> LegalState:
         "routed_domains": [],
         "expert_drafts": [],
         "final_draft": "",
+        "hallucination_summary": {},
         "critic_feedback": "",
         "needs_revision": False,
         "revision_count": 0,
