@@ -27,6 +27,7 @@ async function submitQuery() {
     }
 
     // UI State: Loading
+    document.getElementById('mode-toggle').disabled = true;
     document.getElementById('query-result').classList.add('hidden');
     document.getElementById('query-loading').classList.remove('hidden');
 
@@ -71,6 +72,8 @@ async function submitQuery() {
     } catch (error) {
         alert("Error connecting to AI: " + error.message);
         document.getElementById('query-loading').classList.add('hidden');
+    } finally {
+        document.getElementById('mode-toggle').disabled = false;
     }
 }
 
@@ -107,6 +110,7 @@ async function handleFileUpload() {
     formData.append("mode", getMode());
 
     // UI State: Loading
+    document.getElementById('mode-toggle').disabled = true;
     document.getElementById('contract-result').classList.add('hidden');
     document.getElementById('contract-loading').classList.remove('hidden');
 
