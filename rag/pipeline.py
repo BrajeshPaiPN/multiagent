@@ -12,8 +12,15 @@ from langchain_core.documents import Document
 RAG_DB_PATH = os.path.join(os.path.dirname(__file__), "faiss_index")
 
 # We use a lightweight, fast, local embedding model
-# (all-MiniLM-L6-v2 is standard for local semantic search)
-EMBEDDINGS = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+# Initialized lazily to prevent server boot timeouts.
+_EMBEDDINGS = None
+
+def get_embeddings():
+    global _EMBEDDINGS
+    if _EMBEDDINGS is None:
+        print("[RAG] Loading Embedding Model...")
+        _EMBEDDINGS = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    return _EMBEDDINGS
 
 # Mock Dataset: Excerpts from Indian Constitution and Legal Textbooks
 KNOWLEDGE_BASE = [
@@ -50,7 +57,7 @@ KNOWLEDGE_BASE = [
 def init_vector_store():
     """Initializes the FAISS vector store with our knowledge base."""
     print("[RAG] Initializing local FAISS Vector Store...")
-    vector_store = FAISS.from_documents(KNOWLEDGE_BASE, EMBEDDINGS)
+    vector_store = FAISS.from_documents(KNOWLEDGE_BASE, get_embeddings())
     vector_store.save_local(RAG_DB_PATH)
     print("[RAG] FAISS initialized successfully.")
     return vector_store
@@ -58,7 +65,7 @@ def init_vector_store():
 def get_vector_store():
     """Loads the vector store, creating it if it doesn't exist."""
     if os.path.exists(RAG_DB_PATH):
-        return FAISS.load_local(RAG_DB_PATH, EMBEDDINGS, allow_dangerous_deserialization=True)
+        return FAISS.load_local(RAG_DB_PATH, get_embeddings(), allow_dangerous_deserialization=True)
     else:
         return init_vector_store()
 

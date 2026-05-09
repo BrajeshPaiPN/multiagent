@@ -12,7 +12,7 @@ import pytesseract
 from pdf2image import convert_from_path
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
-from pipeline import get_vector_store, EMBEDDINGS, RAG_DB_PATH
+from rag.pipeline import get_vector_store, RAG_DB_PATH
 
 UPLOAD_DIR = os.path.join(os.path.dirname(__file__), "uploads")
 
