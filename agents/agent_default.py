@@ -183,8 +183,9 @@ Write a detailed legal opinion answering the user's query.
         response = synth_llm.invoke(prompt)
         final_text = response.content
     except Exception as e:
-        print(f"    [!] Synthesis error: {e}")
-        final_text = f"[ERROR] Could not generate legal opinion: {e}"
+        err = str(e)
+        print(f"    [!] Synthesis error: {err}")
+        final_text = f"**AI Engine Error:** {err}"
 
     print("    Draft complete.")
     return {
