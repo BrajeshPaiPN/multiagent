@@ -41,16 +41,13 @@ if GROQ_API_KEY:
     os.environ["GROQ_API_KEY"] = GROQ_API_KEY
 
 # ==========================================
-# LLM MODELS (Heterogeneous)
+# LLM MODELS
 # ==========================================
-# Router Agent: Fast domain classification
-LLM_ROUTER = "llama3-8b-8192"
-
-# Agent 1 (Analyzer): Fast structured extraction
-LLM_ANALYZER = "llama3-8b-8192" 
-
-# Agent 5 (Synthesizer): Long-context legal reasoning
-LLM_SYNTHESIZER = "llama3-8b-8192"
+# llama3-8b-8192 was decommissioned by Groq on 2025-04-30.
+# Replacement: llama-3.1-8b-instant (same speed, same free tier)
+LLM_ROUTER = "llama-3.1-8b-instant"
+LLM_ANALYZER = "llama-3.1-8b-instant"
+LLM_SYNTHESIZER = "llama-3.1-8b-instant"
 
 # Fallback/General Model
 GEMINI_MODEL = "gemini-2.5-flash"
