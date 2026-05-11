@@ -114,7 +114,7 @@ def run_ingestion():
     print(f"[*] Generating embeddings and building FAISS index for {len(all_docs)} chunks...", flush=True)
     
     # Use Google embeddings to save local RAM on cloud deployments
-    embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
     
     vectorstore = FAISS.from_documents(all_docs, embeddings)
     

@@ -1,9 +1,135 @@
 {
-    "accuracy": 20.0,
-    "precision": 100.0,
-    "recall": 100.0,
-    "tp": 4,
-    "tn": 0,
-    "fp": 0,
-    "fn": 0
+  "benchmark": "Hallucination Detection",
+  "dataset_sources": {
+    "real_cases": "indiankanoon.org",
+    "fake_cases": "researcher-generated synthetic"
+  },
+  "model": "llama-3.1-8b-instant",
+  "total": 15,
+  "correct": 11,
+  "accuracy_pct": 73.33,
+  "recall_pct": 100.0,
+  "precision_pct": 0.0,
+  "details": [
+    {
+      "case": "Kesavananda Bharati v. State of Kerala",
+      "year": "1973",
+      "is_real": true,
+      "verdict": "VERIFIED",
+      "correct": true,
+      "source": "indiankanoon.org"
+    },
+    {
+      "case": "Maneka Gandhi v. Union of India",
+      "year": "1978",
+      "is_real": true,
+      "verdict": "VERIFIED",
+      "correct": true,
+      "source": "indiankanoon.org"
+    },
+    {
+      "case": "Vishaka v. State of Rajasthan",
+      "year": "1997",
+      "is_real": true,
+      "verdict": "VERIFIED",
+      "correct": true,
+      "source": "indiankanoon.org"
+    },
+    {
+      "case": "Mohd. Ahmed Khan v. Shah Bano Begum",
+      "year": "1985",
+      "is_real": true,
+      "verdict": "VERIFIED",
+      "correct": true,
+      "source": "indiankanoon.org"
+    },
+    {
+      "case": "M.C. Mehta v. Union of India",
+      "year": "1987",
+      "is_real": true,
+      "verdict": "VERIFIED",
+      "correct": true,
+      "source": "indiankanoon.org"
+    },
+    {
+      "case": "Shreya Singhal v. Union of India",
+      "year": "2015",
+      "is_real": true,
+      "verdict": "VERIFIED",
+      "correct": true,
+      "source": "indiankanoon.org"
+    },
+    {
+      "case": "Justice K.S. Puttaswamy v. Union of India",
+      "year": "2017",
+      "is_real": true,
+      "verdict": "VERIFIED",
+      "correct": true,
+      "source": "indiankanoon.org"
+    },
+    {
+      "case": "Navtej Singh Johar v. Union of India",
+      "year": "2018",
+      "is_real": true,
+      "verdict": "VERIFIED",
+      "correct": true,
+      "source": "indiankanoon.org"
+    },
+    {
+      "case": "Shayara Bano v. Union of India",
+      "year": "2017",
+      "is_real": true,
+      "verdict": "VERIFIED",
+      "correct": true,
+      "source": "indiankanoon.org"
+    },
+    {
+      "case": "Indra Sawhney v. Union of India",
+      "year": "1992",
+      "is_real": true,
+      "verdict": "VERIFIED",
+      "correct": true,
+      "source": "indiankanoon.org"
+    },
+    {
+      "case": "Digital Rights Foundation v. BSNL",
+      "year": "2019",
+      "is_real": false,
+      "verdict": "VERIFIED",
+      "correct": false,
+      "source": "synthetic (researcher-generated)"
+    },
+    {
+      "case": "Aadhaar Verification Services v. UIDAI",
+      "year": "2021",
+      "is_real": false,
+      "verdict": "VERIFIED",
+      "correct": false,
+      "source": "synthetic (researcher-generated)"
+    },
+    {
+      "case": "Farmers Union of Punjab v. Union of India",
+      "year": "2021",
+      "is_real": false,
+      "verdict": "VERIFIED",
+      "correct": false,
+      "source": "synthetic (researcher-generated)"
+    },
+    {
+      "case": "State of Maharashtra v. Mohammed Ajmal Amir Kasab",
+      "year": "2012",
+      "is_real": true,
+      "verdict": "VERIFIED",
+      "correct": true,
+      "source": "synthetic (researcher-generated)"
+    },
+    {
+      "case": "Citizens for Clean Air v. Ministry of Environment",
+      "year": "2020",
+      "is_real": false,
+      "verdict": "VERIFIED",
+      "correct": false,
+      "source": "synthetic (researcher-generated)"
+    }
+  ]
 }

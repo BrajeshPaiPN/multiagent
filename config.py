@@ -72,17 +72,17 @@ LLM_ROUTER   = "llama-3.1-8b-instant"
 LLM_ANALYZER = "llama-3.3-70b-versatile"
 
 # Stage 2: Specialist synthesis (parallel execution, requires high TPM and great reasoning)
-LLM_SYNTHESIZER = "gemma2-9b-it"
+LLM_SYNTHESIZER = "llama-3.1-8b-instant"
 
 # Stage 3: Hallucination verifier (cross-model validation to prevent single-model blind spots)
 LLM_VERIFIER_V1 = "llama-3.1-8b-instant"   # Fast first-pass
-LLM_VERIFIER_V2 = "gemma2-9b-it"           # Independent check
+LLM_VERIFIER_V2 = "llama-3.3-70b-versatile" # Independent check (different model family)
 
 # Stage 4: Master synthesizer (deep reasoning, sequential execution so 12K TPM limit is fine)
 LLM_MASTER = "llama-3.3-70b-versatile"
 
 # Stage 5: Critic (Independent high-parameter model for unbiased review)
-LLM_CRITIC = "gemma2-9b-it"
+LLM_CRITIC = "llama-3.3-70b-versatile"
 
 # Stage 6: Contract analysis (Google AI, massive context)
 GEMINI_MODEL = "gemini-2.5-flash"

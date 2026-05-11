@@ -1,0 +1,407 @@
+{
+  "benchmark": "BNS Mapping Accuracy",
+  "dataset": "ipc_bns_ground_truth.csv",
+  "dataset_sources": [
+    "lawsikho.com",
+    "uppolice.gov.in",
+    "evaakil.com"
+  ],
+  "model": "llama-3.1-8b-instant",
+  "total": 49,
+  "correct": 49,
+  "accuracy_pct": 100.0,
+  "details": [
+    {
+      "ipc": "6",
+      "offence": "General Explanations",
+      "expected_bns": "7",
+      "actual_bns": "7",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "8",
+      "offence": "Gender Definition",
+      "expected_bns": "10",
+      "actual_bns": "10",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "11",
+      "offence": "Person Definition",
+      "expected_bns": "2",
+      "actual_bns": "2",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "21",
+      "offence": "Public Servant Definition",
+      "expected_bns": "2",
+      "actual_bns": "2",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "24",
+      "offence": "Dishonestly",
+      "expected_bns": "2",
+      "actual_bns": "2",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "25",
+      "offence": "Fraudulently",
+      "expected_bns": "2",
+      "actual_bns": "2",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "34",
+      "offence": "Common Intention",
+      "expected_bns": "3",
+      "actual_bns": "3",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "107",
+      "offence": "Abetment Definition",
+      "expected_bns": "45",
+      "actual_bns": "45",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "108",
+      "offence": "Abettor",
+      "expected_bns": "46",
+      "actual_bns": "46",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "120A",
+      "offence": "Criminal Conspiracy",
+      "expected_bns": "61",
+      "actual_bns": "61",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "120B",
+      "offence": "Punishment for Criminal Conspiracy",
+      "expected_bns": "61",
+      "actual_bns": "61",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "124A",
+      "offence": "Sedition / Acts endangering sovereignty",
+      "expected_bns": "152",
+      "actual_bns": "152",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in/evaakil.com"
+    },
+    {
+      "ipc": "141",
+      "offence": "Unlawful Assembly",
+      "expected_bns": "189",
+      "actual_bns": "189",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "146",
+      "offence": "Rioting",
+      "expected_bns": "191",
+      "actual_bns": "191",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "153A",
+      "offence": "Promoting enmity between groups",
+      "expected_bns": "196",
+      "actual_bns": "196",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "166",
+      "offence": "Public Servant disobeying law",
+      "expected_bns": "219",
+      "actual_bns": "219",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "171B",
+      "offence": "Bribery",
+      "expected_bns": "172",
+      "actual_bns": "172",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "172",
+      "offence": "Absconding to avoid summons",
+      "expected_bns": "206",
+      "actual_bns": "206",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "191",
+      "offence": "Giving false evidence",
+      "expected_bns": "227",
+      "actual_bns": "227",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "299",
+      "offence": "Culpable Homicide Definition",
+      "expected_bns": "101",
+      "actual_bns": "101",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "302",
+      "offence": "Punishment for Murder",
+      "expected_bns": "103",
+      "actual_bns": "103",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in/evaakil.com"
+    },
+    {
+      "ipc": "304",
+      "offence": "Culpable Homicide not amounting to murder",
+      "expected_bns": "105",
+      "actual_bns": "105",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "304A",
+      "offence": "Death by Negligence",
+      "expected_bns": "106",
+      "actual_bns": "106",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "307",
+      "offence": "Attempt to Murder",
+      "expected_bns": "109",
+      "actual_bns": "109",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "309",
+      "offence": "Attempt to Commit Suicide",
+      "expected_bns": "226",
+      "actual_bns": "226",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "319",
+      "offence": "Hurt",
+      "expected_bns": "115",
+      "actual_bns": "115",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "341",
+      "offence": "Wrongful Restraint",
+      "expected_bns": "126",
+      "actual_bns": "126",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "342",
+      "offence": "Wrongful Confinement",
+      "expected_bns": "127",
+      "actual_bns": "127",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "350",
+      "offence": "Criminal Force",
+      "expected_bns": "131",
+      "actual_bns": "131",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "351",
+      "offence": "Assault",
+      "expected_bns": "132",
+      "actual_bns": "132",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "354",
+      "offence": "Assault to outrage modesty of woman",
+      "expected_bns": "74",
+      "actual_bns": "74",
+      "status": "PASS",
+      "source": "evaakil.com"
+    },
+    {
+      "ipc": "359",
+      "offence": "Kidnapping",
+      "expected_bns": "137",
+      "actual_bns": "137",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "375",
+      "offence": "Rape Definition",
+      "expected_bns": "63",
+      "actual_bns": "63",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in/evaakil.com"
+    },
+    {
+      "ipc": "376",
+      "offence": "Punishment for Rape",
+      "expected_bns": "64",
+      "actual_bns": "64",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "378",
+      "offence": "Theft",
+      "expected_bns": "303",
+      "actual_bns": "303",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "383",
+      "offence": "Extortion",
+      "expected_bns": "308",
+      "actual_bns": "308",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "390",
+      "offence": "Robbery",
+      "expected_bns": "309",
+      "actual_bns": "309",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "391",
+      "offence": "Dacoity",
+      "expected_bns": "310",
+      "actual_bns": "310",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "403",
+      "offence": "Criminal Misappropriation",
+      "expected_bns": "314",
+      "actual_bns": "314",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "405",
+      "offence": "Criminal Breach of Trust",
+      "expected_bns": "316",
+      "actual_bns": "316",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "410",
+      "offence": "Stolen Property",
+      "expected_bns": "317",
+      "actual_bns": "317",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "420",
+      "offence": "Cheating",
+      "expected_bns": "318",
+      "actual_bns": "318",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "425",
+      "offence": "Mischief",
+      "expected_bns": "324",
+      "actual_bns": "324",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "441",
+      "offence": "Criminal Trespass",
+      "expected_bns": "329",
+      "actual_bns": "329",
+      "status": "PASS",
+      "source": "lawsikho.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "498A",
+      "offence": "Cruelty by Husband or Relatives",
+      "expected_bns": "85",
+      "actual_bns": "85",
+      "status": "PASS",
+      "source": "evaakil.com/uppolice.gov.in"
+    },
+    {
+      "ipc": "503",
+      "offence": "Criminal Intimidation",
+      "expected_bns": "351",
+      "actual_bns": "351",
+      "status": "PASS",
+      "source": "evaakil.com"
+    },
+    {
+      "ipc": "504",
+      "offence": "Insult to provoke breach of peace",
+      "expected_bns": "353",
+      "actual_bns": "353",
+      "status": "PASS",
+      "source": "evaakil.com"
+    },
+    {
+      "ipc": "506",
+      "offence": "Criminal Intimidation Punishment",
+      "expected_bns": "351",
+      "actual_bns": "351",
+      "status": "PASS",
+      "source": "evaakil.com"
+    },
+    {
+      "ipc": "509",
+      "offence": "Word gesture or act to insult modesty",
+      "expected_bns": "79",
+      "actual_bns": "79",
+      "status": "PASS",
+      "source": "evaakil.com"
+    }
+  ]
+}

@@ -28,7 +28,7 @@ def _get_vector_store():
             return None
             
         if _EMBEDDINGS is None:
-            _EMBEDDINGS = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+            _EMBEDDINGS = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
             
         _VECTOR_STORE = FAISS.load_local(
             INDEX_PATH, 
