@@ -125,7 +125,7 @@ async def analyze_with_document(
         enriched_query = (
             f"{query}\n\n"
             f"--- ATTACHED DOCUMENT (extracted text) ---\n"
-            f"{extracted_text[:8000]}\n"
+            f"{extracted_text[:4000]}\n"
             f"--- END OF DOCUMENT ---"
         )
 

@@ -71,8 +71,8 @@ if GROQ_API_KEY:
 LLM_ROUTER   = "llama-3.1-8b-instant"
 LLM_ANALYZER = "llama-3.1-8b-instant"    # used as extractor in each agent
 
-# Stage 2: Specialist synthesis (deeper, larger model)
-LLM_SYNTHESIZER = "llama-3.3-70b-versatile"
+# Stage 2: Specialist synthesis (fast, avoids 70B rate limits during parallel execution)
+LLM_SYNTHESIZER = "llama-3.1-8b-instant"
 
 # Stage 3: Hallucination verifier (cross-model validation)
 LLM_VERIFIER_V1 = "llama-3.1-8b-instant"   # fast first-pass
