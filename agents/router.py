@@ -44,13 +44,26 @@ def node_router(state: dict) -> dict:
         structured_llm = llm.with_structured_output(RoutingDecision)
 
         prompt = (
-            "You are a legal query router. Your job is to read the user's "
-            "legal question and decide the SINGLE MOST RELEVANT specialist to handle it.\n"
-            "To prevent API rate limits, you MUST choose EXACTLY ONE domain.\n\n"
+            "You are a legal query router for an Indian AI legal platform. "
+            "Read the user's legal question and decide which specialist agents "
+            "should handle it.\n\n"
             "Valid domains:\n"
-            "  • 'criminal', 'civil', 'patents', 'real_estate', 'traffic', 'general'\n\n"
+            "  • 'criminal'     — IPC, BNS, FIR, bail, arrest, criminal charges\n"
+            "  • 'civil'        — contracts, torts, consumer disputes, injunctions\n"
+            "  • 'patents'      — patents, trademarks, copyright, IP\n"
+            "  • 'real_estate'  — property, RERA, land, rent, title deeds\n"
+            "  • 'traffic'      — traffic tickets, challans, MVA, driving\n"
+            "  • 'general'      — constitutional law, family law, tax, cyber, anything else\n\n"
+            "RULES:\n"
+            "1. If the query clearly belongs to ONE domain, return ONLY that domain.\n"
+            "2. If the query genuinely spans MULTIPLE domains (e.g., a road accident "
+            "involves both 'criminal' charges AND 'civil' compensation AND 'traffic' "
+            "violations), return ALL relevant domains (max 3).\n"
+            "3. Do NOT add domains that are only tangentially related. Be precise.\n"
+            "4. 'general' should be used for constitutional, family, tax, cyber, "
+            "environmental law, or when no specialist fits.\n\n"
             f"User query: \"{state['user_query']}\"\n\n"
-            "Respond with EXACTLY ONE domain in the list, and a brief reasoning."
+            "Return the relevant domain(s) and a brief reasoning."
         )
 
         result = structured_llm.invoke(prompt)
@@ -60,11 +73,11 @@ def node_router(state: dict) -> dict:
         valid_domains = {"criminal", "civil", "patents", "real_estate", "traffic", "general"}
         domains = [d for d in domains if d in valid_domains]
         
-        # Enforce single domain
+        # Cap at 3 domains for rate-limit safety, deduplicate
         if not domains:
             domains = ["general"]
         else:
-            domains = [domains[0]]
+            domains = list(dict.fromkeys(domains))[:3]
 
         print(f"    Routed to: {domains}")
         print(f"    Reason:    {result.reasoning}")
