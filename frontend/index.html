@@ -214,16 +214,25 @@
 
             <!-- Contract Result -->
             <div id="contract-result" class="result-section hidden">
-                <div class="result-header">
-                    <div class="result-header-left">
-                        <div>
-                            <h2 class="result-title">Contract Risk Report</h2>
-                            <p class="result-sub" id="contract-type">AI-powered clause-by-clause analysis</p>
-                        </div>
-                    </div>
-                    <div class="verdict-chip" id="contract-verdict"></div>
+
+                <!-- ① Decision Card -->
+                <div class="decision-card" id="decision-card">
+                    <div class="decision-badge" id="decision-badge">⚠️ NEGOTIATE BEFORE SIGNING</div>
+                    <p class="decision-reason" id="decision-reason"></p>
                 </div>
 
+                <!-- ② Header row -->
+                <div class="result-header" style="margin-top:24px">
+                    <div class="result-header-left">
+                        <div>
+                            <h2 class="result-title">Contract Risk Profile</h2>
+                            <p class="result-sub" id="contract-type"></p>
+                            <p class="result-sub" id="contract-parties" style="margin-top:2px;"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ③ Overview blocks -->
                 <div class="contract-overview">
                     <div class="overview-block">
                         <h4><i class="fa-solid fa-align-left"></i> Summary</h4>
@@ -233,18 +242,71 @@
                         <h4><i class="fa-solid fa-industry"></i> Industry Standard Assessment</h4>
                         <p id="industry-assessment"></p>
                     </div>
-                    <div class="overview-block">
+                    <div class="overview-block" style="grid-column:1/-1">
                         <h4><i class="fa-solid fa-lightbulb"></i> Overall Recommendation</h4>
                         <p id="contract-recommendation"></p>
                     </div>
                 </div>
 
-                <div class="clause-legend">
-                    <span class="legend-item"><span class="standard-badge-sm"><i class="fa-solid fa-industry"></i> Industry Standard</span> — Normal clause, widely accepted</span>
-                    <span class="legend-item"><span class="non-standard-badge-sm"><i class="fa-solid fa-triangle-exclamation"></i> Non-Standard</span> — Unusual or potentially one-sided</span>
+                <!-- ④ Charts Row -->
+                <h3 class="section-title"><i class="fa-solid fa-chart-pie"></i> Risk Analysis Dashboard</h3>
+                <div class="charts-grid">
+                    <div class="chart-card chart-gauge">
+                        <div class="chart-card-title">Overall Risk Score</div>
+                        <div class="gauge-wrap">
+                            <canvas id="gaugeChart"></canvas>
+                            <div class="gauge-center">
+                                <div id="gaugeScore" class="gauge-score">—</div>
+                                <div id="gaugeLabel" class="gauge-label">—</div>
+                                <div class="gauge-max">/100</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-card chart-category">
+                        <div class="chart-card-title">Risk by Category</div>
+                        <div class="chart-wrap"><canvas id="categoryChart"></canvas></div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-card-title">Clause Risk Breakdown</div>
+                        <div class="chart-wrap"><canvas id="clauseDonut"></canvas></div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-card-title">Standard vs. Non-Standard</div>
+                        <div class="chart-wrap"><canvas id="standardDonut"></canvas></div>
+                    </div>
                 </div>
 
-                <h3 class="pitfalls-title"><i class="fa-solid fa-list-check"></i> Clause-by-Clause Analysis</h3>
+                <!-- ⑤ Red / Green Flags -->
+                <div id="flags-section">
+                    <div class="flags-grid">
+                        <div class="flags-col flags-red">
+                            <h4><i class="fa-solid fa-circle-xmark"></i> Red Flags</h4>
+                            <ul id="red-flags-list"></ul>
+                        </div>
+                        <div class="flags-col flags-green">
+                            <h4><i class="fa-solid fa-circle-check"></i> Green Flags</h4>
+                            <ul id="green-flags-list"></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ⑥ Negotiation Priorities -->
+                <div id="negotiation-section">
+                    <h3 class="section-title"><i class="fa-solid fa-handshake"></i> Negotiation Priorities</h3>
+                    <div id="negotiation-container" class="neg-grid"></div>
+                </div>
+
+                <!-- ⑦ Clause Legend -->
+                <div class="clause-legend">
+                    <span class="legend-item"><span class="standard-badge-sm"><i class="fa-solid fa-industry"></i> Industry Standard</span> — Normal clause</span>
+                    <span class="legend-item"><span class="non-standard-badge-sm"><i class="fa-solid fa-triangle-exclamation"></i> Non-Standard</span> — Unusual / one-sided</span>
+                </div>
+
+                <!-- ⑧ Clause Analysis -->
+                <h3 class="section-title"><i class="fa-solid fa-list-check"></i> Clause-by-Clause Analysis</h3>
                 <div id="pitfalls-container" class="pitfalls-grid"></div>
             </div>
 
@@ -258,6 +320,8 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     <script src="/static/app.js"></script>
 </body>
 </html>
+

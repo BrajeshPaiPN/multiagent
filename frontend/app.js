@@ -6,6 +6,10 @@
 // ── State ──────────────────────────────────────────────────
 let currentMode = 'citizen';
 let isLoading = false;
+let riskGaugeChart = null;
+let categoryBarChart = null;
+let clauseDonutChart = null;
+let standardDonutChart = null;
 
 // ── Helpers ────────────────────────────────────────────────
 function getMode() { return currentMode; }
@@ -92,7 +96,6 @@ async function submitQuery() {
         if (!res.ok) throw new Error(`Server returned ${res.status}`);
         const data = await res.json();
 
-        // Tags
         const tagsEl = document.getElementById('routed-domains');
         tagsEl.innerHTML = '';
         (data.routed_domains || []).forEach(d => {
@@ -102,13 +105,11 @@ async function submitQuery() {
             tagsEl.appendChild(tag);
         });
 
-        // Stats
         document.getElementById('stat-verified').textContent = data.pipeline_summary?.verified_cases ?? 0;
         document.getElementById('stat-cautioned').textContent = data.pipeline_summary?.cautioned_cases ?? 0;
         document.getElementById('stat-rejected').textContent = data.pipeline_summary?.rejected_cases ?? 0;
         document.getElementById('stat-revisions').textContent = data.revisions_made ?? 0;
 
-        // Memo
         document.getElementById('final-draft').innerHTML = marked.parse(data.final_draft || '');
 
         stopAgentAnimation();
@@ -141,10 +142,129 @@ function handleFileSelect(event) {
 function showFileSelected(file) {
     document.getElementById('file-name-display').textContent = file.name;
     document.getElementById('file-selected').classList.remove('hidden');
-    // Store reference for later upload
     window._selectedFile = file;
 }
 
+// ── Chart helpers ───────────────────────────────────────────
+function destroyCharts() {
+    [riskGaugeChart, categoryBarChart, clauseDonutChart, standardDonutChart].forEach(c => {
+        if (c) { c.destroy(); }
+    });
+    riskGaugeChart = categoryBarChart = clauseDonutChart = standardDonutChart = null;
+}
+
+function getRiskColor(score) {
+    if (score >= 67) return '#EF4444';
+    if (score >= 34) return '#F59E0B';
+    return '#22C55E';
+}
+
+function buildGaugeChart(score) {
+    const ctx = document.getElementById('gaugeChart').getContext('2d');
+    const color = getRiskColor(score);
+    riskGaugeChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: [score, 100 - score],
+                backgroundColor: [color, 'rgba(255,255,255,0.06)'],
+                borderWidth: 0,
+                circumference: 180,
+                rotation: 270,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '75%',
+            plugins: { legend: { display: false }, tooltip: { enabled: false } },
+        }
+    });
+    document.getElementById('gaugeScore').textContent = score;
+    document.getElementById('gaugeScore').style.color = color;
+    const label = score >= 67 ? 'HIGH RISK' : score >= 34 ? 'MODERATE RISK' : 'LOW RISK';
+    document.getElementById('gaugeLabel').textContent = label;
+    document.getElementById('gaugeLabel').style.color = color;
+}
+
+function buildCategoryChart(scores) {
+    const ctx = document.getElementById('categoryChart').getContext('2d');
+    const labels = Object.keys(scores);
+    const values = Object.values(scores);
+    const colors = values.map(v => getRiskColor(v) + 'CC');
+    categoryBarChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [{
+                data: values,
+                backgroundColor: colors,
+                borderRadius: 6,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false }, tooltip: {
+                callbacks: { label: ctx => ` Risk Score: ${ctx.raw}/100` }
+            }},
+            scales: {
+                x: {
+                    min: 0, max: 100,
+                    grid: { color: 'rgba(255,255,255,0.05)' },
+                    ticks: { color: '#94A3B8', font: { size: 11 } }
+                },
+                y: { grid: { display: false }, ticks: { color: '#CBD5E1', font: { size: 11 } } }
+            }
+        }
+    });
+}
+
+function buildClauseDonut(breakdown) {
+    const ctx = document.getElementById('clauseDonut').getContext('2d');
+    clauseDonutChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['High Risk', 'Medium Risk', 'Low Risk'],
+            datasets: [{
+                data: [breakdown.high, breakdown.medium, breakdown.low],
+                backgroundColor: ['rgba(239,68,68,0.8)', 'rgba(245,158,11,0.8)', 'rgba(34,197,94,0.8)'],
+                borderWidth: 0,
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false, cutout: '65%',
+            plugins: {
+                legend: { position: 'bottom', labels: { color: '#94A3B8', padding: 12, font: { size: 11 } } }
+            }
+        }
+    });
+}
+
+function buildStandardDonut(breakdown) {
+    const ctx = document.getElementById('standardDonut').getContext('2d');
+    standardDonutChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Industry Standard', 'Non-Standard'],
+            datasets: [{
+                data: [breakdown.standard, breakdown.non_standard],
+                backgroundColor: ['rgba(34,197,94,0.8)', 'rgba(239,68,68,0.8)'],
+                borderWidth: 0,
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false, cutout: '65%',
+            plugins: {
+                legend: { position: 'bottom', labels: { color: '#94A3B8', padding: 12, font: { size: 11 } } }
+            }
+        }
+    });
+}
+
+// ── Main upload handler ─────────────────────────────────────
 async function handleFileUpload() {
     const file = window._selectedFile;
     if (!file) return;
@@ -156,6 +276,7 @@ async function handleFileUpload() {
     setLoadingLock(true);
     document.getElementById('contract-result').classList.add('hidden');
     document.getElementById('contract-loading').classList.remove('hidden');
+    destroyCharts();
 
     try {
         const res = await fetch('/api/analyze-contract', { method: 'POST', body: formData });
@@ -165,27 +286,71 @@ async function handleFileUpload() {
         }
         const data = await res.json();
 
-        // Contract type & summary
-        const contractTypeEl = document.getElementById('contract-type');
-        if (contractTypeEl) contractTypeEl.textContent = data.contract_type || '';
+        // ── Decision Card ───────────────────────────────────
+        const decisionEl = document.getElementById('decision-badge');
+        const decisionReasonEl = document.getElementById('decision-reason');
+        const dec = (data.decision || 'NEGOTIATE').toUpperCase();
+        decisionEl.textContent = dec === 'SIGN' ? '✅ SIGN THIS CONTRACT'
+                               : dec === 'REJECT' ? '🚫 DO NOT SIGN — REJECT'
+                               : '⚠️ NEGOTIATE BEFORE SIGNING';
+        decisionEl.className = 'decision-badge decision-' + dec.toLowerCase();
+        decisionReasonEl.textContent = data.decision_reason || '';
+
+        // ── Meta info ───────────────────────────────────────
+        document.getElementById('contract-type').textContent = data.contract_type || '';
+        document.getElementById('contract-parties').textContent = data.parties || '';
         document.getElementById('contract-summary').textContent = data.summary || '';
-
-        // Industry standard assessment banner
-        const industryAssessEl = document.getElementById('industry-assessment');
-        if (industryAssessEl) industryAssessEl.textContent = data.industry_standard_assessment || '';
-
-        // Safe/Unsafe verdict
-        const verdict = document.getElementById('contract-verdict');
-        if (data.is_safe_to_sign) {
-            verdict.textContent = '✓ Broadly Acceptable — Safe to Sign';
-            verdict.className = 'verdict-chip safe';
-        } else {
-            verdict.textContent = '✗ High Risk — Renegotiate Before Signing';
-            verdict.className = 'verdict-chip unsafe';
-        }
-
+        document.getElementById('industry-assessment').textContent = data.industry_standard_assessment || '';
         document.getElementById('contract-recommendation').textContent = data.overall_recommendation || '';
 
+        // ── Charts ──────────────────────────────────────────
+        buildGaugeChart(data.overall_risk_score || 0);
+        buildCategoryChart(data.category_scores || {});
+        buildClauseDonut(data.risk_breakdown || { high: 0, medium: 0, low: 0 });
+        buildStandardDonut(data.standard_breakdown || { standard: 0, non_standard: 0 });
+
+        // ── Red / Green Flags ───────────────────────────────
+        const redContainer = document.getElementById('red-flags-list');
+        const greenContainer = document.getElementById('green-flags-list');
+        redContainer.innerHTML = '';
+        greenContainer.innerHTML = '';
+
+        (data.red_flags || []).forEach(f => {
+            const li = document.createElement('li');
+            li.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> ${f}`;
+            redContainer.appendChild(li);
+        });
+        (data.green_flags || []).forEach(f => {
+            const li = document.createElement('li');
+            li.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${f}`;
+            greenContainer.appendChild(li);
+        });
+
+        document.getElementById('flags-section').classList.toggle('hidden',
+            !data.red_flags?.length && !data.green_flags?.length);
+
+        // ── Negotiation Priorities ──────────────────────────
+        const negContainer = document.getElementById('negotiation-container');
+        negContainer.innerHTML = '';
+        (data.negotiation_priorities || []).forEach((n, i) => {
+            const prioClass = n.priority === 'Critical' ? 'prio-critical'
+                            : n.priority === 'Important' ? 'prio-important' : 'prio-nice';
+            const card = document.createElement('div');
+            card.className = 'neg-card';
+            card.innerHTML = `
+                <div class="neg-header">
+                    <span class="neg-number">${i + 1}</span>
+                    <span class="prio-badge ${prioClass}">${n.priority}</span>
+                    <strong class="neg-clause">${n.clause}</strong>
+                </div>
+                <div class="neg-ask"><i class="fa-solid fa-pen-to-square"></i><span><strong>Ask for:</strong> ${n.ask}</span></div>
+                <div class="neg-leverage"><i class="fa-solid fa-handshake"></i><span><strong>Leverage:</strong> ${n.leverage}</span></div>
+            `;
+            negContainer.appendChild(card);
+        });
+        document.getElementById('negotiation-section').classList.toggle('hidden', !data.negotiation_priorities?.length);
+
+        // ── Clause Cards ────────────────────────────────────
         const container = document.getElementById('pitfalls-container');
         container.innerHTML = '';
         (data.pitfalls || []).forEach(p => {
@@ -194,12 +359,15 @@ async function handleFileUpload() {
             const standardBadge = isStandard
                 ? `<div class="standard-badge"><i class="fa-solid fa-industry"></i> Industry Standard</div>`
                 : `<div class="non-standard-badge"><i class="fa-solid fa-triangle-exclamation"></i> Non-Standard</div>`;
+            const scoreColor = getRiskColor(p.risk_score || 50);
             const card = document.createElement('div');
             card.className = `pitfall-card risk-${riskClass}`;
             card.innerHTML = `
                 <div class="clause-card-header">
                     <div class="risk-badge">${p.risk_level || 'Medium'} Risk</div>
                     ${standardBadge}
+                    <span class="clause-category-tag">${p.clause_category || ''}</span>
+                    <span class="clause-score" style="color:${scoreColor}">${p.risk_score || '—'}/100</span>
                 </div>
                 <h4>"${p.clause || ''}"</h4>
                 <div class="industry-context"><i class="fa-solid fa-scale-balanced"></i><span><strong>Industry Context:</strong> ${p.industry_context || ''}</span></div>
