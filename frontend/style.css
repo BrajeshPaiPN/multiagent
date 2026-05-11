@@ -325,7 +325,12 @@ body {
 .verdict-chip.unsafe { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
 
 .contract-overview {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;
+}
+.industry-assessment-block {
+  grid-column: 1 / -1;
+  border-color: rgba(212,168,67,0.25);
+  background: rgba(212,168,67,0.05);
 }
 .overview-block {
   background: var(--surface); border: 1px solid var(--border);
@@ -334,7 +339,23 @@ body {
 .overview-block h4 { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-2); margin-bottom: 10px; }
 .overview-block p { font-size: 0.9rem; color: var(--text-1); line-height: 1.6; }
 
-.pitfalls-title { display: flex; align-items: center; gap: 10px; font-size: 1rem; font-weight: 600; margin-bottom: 16px; color: var(--amber); }
+/* Clause Legend */
+.clause-legend {
+  display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 18px;
+  padding: 12px 16px; border-radius: 8px;
+  background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+}
+.legend-item { font-size: 0.8rem; color: var(--text-2); display: flex; align-items: center; gap: 8px; }
+
+.standard-badge-sm, .non-standard-badge-sm {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 2px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.07em;
+}
+.standard-badge-sm { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.25); }
+.non-standard-badge-sm { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.25); }
+
+.pitfalls-title { display: flex; align-items: center; gap: 10px; font-size: 1rem; font-weight: 600; margin-bottom: 16px; color: var(--text-1); }
 .pitfalls-grid { display: flex; flex-direction: column; gap: 12px; }
 
 .pitfall-card {
@@ -344,17 +365,37 @@ body {
 }
 .pitfall-card:hover { transform: translateX(4px); }
 .pitfall-card.risk-high { border-left-color: var(--red); background: rgba(239,68,68,0.05); }
-.pitfall-card.risk-medium { border-left-color: var(--amber); background: rgba(245,158,11,0.05); }
-.pitfall-card.risk-low { border-left-color: var(--blue); background: rgba(59,130,246,0.05); }
+.pitfall-card.risk-medium { border-left-color: var(--amber); background: rgba(245,158,11,0.04); }
+.pitfall-card.risk-low { border-left-color: var(--green); background: rgba(34,197,94,0.04); }
+
+.clause-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
 
 .risk-badge {
   display: inline-flex; padding: 2px 10px; border-radius: 50px;
   font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
-  margin-bottom: 8px;
 }
 .risk-high .risk-badge { background: rgba(239,68,68,0.2); color: var(--red); }
 .risk-medium .risk-badge { background: rgba(245,158,11,0.2); color: var(--amber); }
-.risk-low .risk-badge { background: rgba(59,130,246,0.2); color: var(--blue); }
+.risk-low .risk-badge { background: rgba(34,197,94,0.2); color: var(--green); }
+
+.standard-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 2px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 700;
+  background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.25);
+}
+.non-standard-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 2px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 700;
+  background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.25);
+}
+
+.industry-context {
+  display: flex; gap: 8px; align-items: flex-start;
+  padding: 8px 12px; border-radius: 8px; margin-bottom: 8px;
+  background: rgba(212,168,67,0.07); border: 1px solid rgba(212,168,67,0.15);
+  font-size: 0.83rem; color: var(--text-2); line-height: 1.5;
+}
+.industry-context i { color: var(--gold); margin-top: 2px; flex-shrink: 0; }
 
 .pitfall-card h4 { font-size: 0.92rem; font-weight: 600; margin-bottom: 6px; font-style: italic; }
 .pitfall-card p { font-size: 0.86rem; color: var(--text-2); margin-bottom: 8px; line-height: 1.6; }

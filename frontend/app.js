@@ -165,14 +165,22 @@ async function handleFileUpload() {
         }
         const data = await res.json();
 
+        // Contract type & summary
+        const contractTypeEl = document.getElementById('contract-type');
+        if (contractTypeEl) contractTypeEl.textContent = data.contract_type || '';
         document.getElementById('contract-summary').textContent = data.summary || '';
 
+        // Industry standard assessment banner
+        const industryAssessEl = document.getElementById('industry-assessment');
+        if (industryAssessEl) industryAssessEl.textContent = data.industry_standard_assessment || '';
+
+        // Safe/Unsafe verdict
         const verdict = document.getElementById('contract-verdict');
         if (data.is_safe_to_sign) {
-            verdict.textContent = '✓ Safe to Sign';
+            verdict.textContent = '✓ Broadly Acceptable — Safe to Sign';
             verdict.className = 'verdict-chip safe';
         } else {
-            verdict.textContent = '✗ High Risk — Do Not Sign';
+            verdict.textContent = '✗ High Risk — Renegotiate Before Signing';
             verdict.className = 'verdict-chip unsafe';
         }
 
@@ -181,13 +189,22 @@ async function handleFileUpload() {
         const container = document.getElementById('pitfalls-container');
         container.innerHTML = '';
         (data.pitfalls || []).forEach(p => {
+            const isStandard = p.is_industry_standard;
+            const riskClass = (p.risk_level || 'medium').toLowerCase();
+            const standardBadge = isStandard
+                ? `<div class="standard-badge"><i class="fa-solid fa-industry"></i> Industry Standard</div>`
+                : `<div class="non-standard-badge"><i class="fa-solid fa-triangle-exclamation"></i> Non-Standard</div>`;
             const card = document.createElement('div');
-            card.className = `pitfall-card risk-${(p.risk_level || 'medium').toLowerCase()}`;
+            card.className = `pitfall-card risk-${riskClass}`;
             card.innerHTML = `
-                <div class="risk-badge">${p.risk_level || 'Medium'} Risk</div>
+                <div class="clause-card-header">
+                    <div class="risk-badge">${p.risk_level || 'Medium'} Risk</div>
+                    ${standardBadge}
+                </div>
                 <h4>"${p.clause || ''}"</h4>
+                <div class="industry-context"><i class="fa-solid fa-scale-balanced"></i><span><strong>Industry Context:</strong> ${p.industry_context || ''}</span></div>
                 <p>${p.explanation || ''}</p>
-                <div class="mitigation"><i class="fa-solid fa-lightbulb"></i><span><strong>Fix:</strong> ${p.mitigation || ''}</span></div>
+                <div class="mitigation"><i class="fa-solid fa-lightbulb"></i><span><strong>${isStandard ? 'Tip' : 'Fix'}:</strong> ${p.mitigation || ''}</span></div>
             `;
             container.appendChild(card);
         });
