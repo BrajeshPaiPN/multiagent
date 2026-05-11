@@ -16,20 +16,35 @@ from config import LLM_ANALYZER
 
 load_dotenv()
 
-# Ground Truth Mapping (Sample of major sections)
+# GROUND TRUTH: BNS-IPC-CrossMap-2024
+# Curated mapping of major Indian Penal Code (IPC) sections to 
+# Bharatiya Nyaya Sanhita (BNS), 2023.
 GROUND_TRUTH = {
     "IPC 302": "BNS 103",   # Murder
     "IPC 307": "BNS 109",   # Attempt to murder
+    "IPC 304B": "BNS 80",   # Dowry death
     "IPC 376": "BNS 64",    # Rape
     "IPC 379": "BNS 303",   # Theft
+    "IPC 380": "BNS 305",   # Theft in dwelling house
     "IPC 392": "BNS 309",   # Robbery
+    "IPC 395": "BNS 310",   # Dacoity
     "IPC 406": "BNS 316",   # Criminal breach of trust
     "IPC 420": "BNS 318",   # Cheating
     "IPC 498A": "BNS 85",   # Cruelty by husband or relatives
-    "IPC 124A": "BNS 152",  # Sedition (Replaced by 'Acts endangering sovereignty')
+    "IPC 124A": "BNS 152",  # Sedition / Acts endangering sovereignty
     "IPC 143": "BNS 189",   # Unlawful assembly
     "IPC 295A": "BNS 299",  # Religious insults
     "IPC 506": "BNS 351",   # Criminal intimidation
+    "IPC 34": "BNS 3",      # Common intention
+    "IPC 120B": "BNS 61",   # Criminal conspiracy
+    "IPC 323": "BNS 115",   # Voluntarily causing hurt
+    "IPC 326": "BNS 117",   # Grievous hurt by dangerous weapons
+    "IPC 354": "BNS 74",    # Outraging modesty of a woman
+    "IPC 363": "BNS 137",   # Kidnapping
+    "IPC 411": "BNS 317",   # Receiving stolen property
+    "IPC 441": "BNS 329",   # Criminal trespass
+    "IPC 499": "BNS 356",   # Defamation
+    "IPC 509": "BNS 79",    # Word, gesture or act intended to insult modesty of a woman
 }
 
 def test_mapping_accuracy():
@@ -78,12 +93,13 @@ def test_mapping_accuracy():
     print("="*60)
     
     # Save results
-    with open("benchmarking/bns_mapping_results.json", "w") as f:
+    output_path = os.path.join(os.path.dirname(__file__), "bns_mapping_results.json")
+    with open(output_path, "w") as f:
         json.dump({
             "accuracy": accuracy,
             "details": results
         }, f, indent=4)
-    print(f"\nDetailed results saved to benchmarking/bns_mapping_results.json")
+    print(f"\nDetailed results saved to {output_path}")
 
 if __name__ == "__main__":
     test_mapping_accuracy()

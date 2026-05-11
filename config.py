@@ -69,17 +69,17 @@ if GROQ_API_KEY:
 
 # Stage 1: Extraction / Routing (fast, structured output, high TPM limits)
 LLM_ROUTER   = "llama-3.1-8b-instant"
-LLM_ANALYZER = "llama3-8b-8192"
+LLM_ANALYZER = "llama-3.3-70b-versatile"
 
 # Stage 2: Specialist synthesis (parallel execution, requires high TPM and great reasoning)
 LLM_SYNTHESIZER = "gemma2-9b-it"
 
 # Stage 3: Hallucination verifier (cross-model validation to prevent single-model blind spots)
 LLM_VERIFIER_V1 = "llama-3.1-8b-instant"   # Fast first-pass
-LLM_VERIFIER_V2 = "llama3-8b-8192"         # Independent check
+LLM_VERIFIER_V2 = "gemma2-9b-it"           # Independent check
 
 # Stage 4: Master synthesizer (deep reasoning, sequential execution so 12K TPM limit is fine)
-LLM_MASTER = "llama3-70b-8192"
+LLM_MASTER = "llama-3.3-70b-versatile"
 
 # Stage 5: Critic (Independent high-parameter model for unbiased review)
 LLM_CRITIC = "gemma2-9b-it"
