@@ -89,8 +89,35 @@ def verify_cases_in_drafts(expert_drafts: list) -> tuple[list, list, list]:
     llm_v2 = ChatGroq(model=LLM_VERIFIER_V2, temperature=0)
 
     verified, hallucinated, uncertain = [], [], []
-
+    
+    # Initialize AKGP Graph for deterministic lookup
+    graph = AKGPGraphManager()
+    
     for case_name in list(all_cases)[:30]:  # Cap at 30 to avoid rate limits
+        # STEP 1: DETERMINISTIC GRAPH LOOKUP (AKGP Ground Truth)
+        graph_record = graph.lookup_case(case_name)
+        if graph_record:
+            overrulers = graph_record.get("overrulers", [])
+            if overrulers:
+                # Deterministic Rejection: Case is known to be overruled
+                print(f"    🚫 REJECTED (GRAPH): {case_name} [OVERRULED by {overrulers[0]['name']}]")
+                hallucinated.append({
+                    "case_name": case_name,
+                    "status": "REJECTED_BY_GRAPH",
+                    "reasoning": f"Deterministic rejection: This case has been overruled by {overrulers[0]['name']} according to the AKGP knowledge graph."
+                })
+                continue
+            else:
+                # Deterministic Verification: Case exists in validated graph
+                print(f"    🏆 VERIFIED (GRAPH): {case_name}")
+                verified.append({
+                    "case_name": case_name,
+                    "status": "VERIFIED_BY_GRAPH",
+                    "avg_confidence": 1.0,
+                    "reasoning": "Deterministic verification: This case exists as a valid authority in the AKGP knowledge graph."
+                })
+                continue
+
         v1 = verify_case_once(llm_v1, case_name)
         v2 = verify_case_once(llm_v2, case_name)
 
@@ -124,6 +151,7 @@ def verify_cases_in_drafts(expert_drafts: list) -> tuple[list, list, list]:
 
     # Persist verified/hallucinated status back to Neo4j
     _update_graph(verified, hallucinated)
+    graph.close()
 
     return verified, hallucinated, uncertain
 

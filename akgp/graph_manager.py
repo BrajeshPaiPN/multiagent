@@ -106,6 +106,27 @@ class AKGPGraphManager:
             results = session.run(query, category=category)
             return [record.data() for record in results]
 
+    def lookup_case(self, case_name: str) -> dict:
+        """Deterministic lookup of a case in the knowledge graph."""
+        if not self._available:
+            return None
+        with self.driver.session() as session:
+            query = """
+            MATCH (c:Precedent)
+            WHERE c.name = $name OR c.name CONTAINS $name
+            RETURN c.name AS case_name,
+                   c.year AS year,
+                   c.verdict AS verdict,
+                   c.court AS court,
+                   c.jurisdiction AS jurisdiction,
+                   [(overruler:Precedent)-[ovr:OVERRULES]->(c) | {name: overruler.name, reason: ovr.reason}] AS overrulers,
+                   [(dissenter:Precedent)-[dis:DISSENTS]->(c) | {name: dissenter.name, reason: dis.reason}] AS dissenters
+            LIMIT 1
+            """
+            result = session.run(query, name=case_name)
+            record = result.single()
+            return record.data() if record else None
+
     def get_conflict_chain(self, case_name: str) -> list:
         """Retrieve the full conflict chain for a case."""
         if not self._available:
