@@ -159,8 +159,9 @@ def node_traffic_agent(state: dict) -> dict:
     cautioned_str = _format_cases(cautioned, "CITE_WITH_CAUTION") or "None."
     rejection_str = "\n".join(error_log) or "None."
 
-    prompt = f"""You are a senior advocate specialising in Indian motor-vehicle and traffic law.
-Write a detailed legal opinion answering the user's query.
+    prompt = f"""You are a senior advocate with 25+ years specialising in Indian motor-vehicle and traffic law.
+Write a COMPREHENSIVE, DETAILED legal opinion answering the user's query.
+This must be thorough — at least 800-1000 words. Cover every angle.
 
 === DOMAIN FOCUS ===
 Focus on: Motor Vehicles Act 1988 (as amended 2019), traffic violations and
@@ -171,11 +172,13 @@ accident compensation under Motor Accident Claims Tribunal (MACT),
 and procedures for contesting traffic tickets.
 
 === STRICT RULES ===
-1. Cite ONLY cases marked SAFE_TO_CITE as binding authority.
-2. Explain why DO_NOT_CITE cases are bad law.
-3. Discuss both sides for CITE_WITH_CAUTION cases.
+1. Cite ONLY cases marked SAFE_TO_CITE as binding authority. Give full citations.
+2. Explain in detail why DO_NOT_CITE cases are bad law and what replaced them.
+3. Discuss both sides for CITE_WITH_CAUTION cases with balanced analysis.
 4. Include Hierarchy Score (H) when citing cases.
-5. Provide specific, actionable advice for handling the traffic matter.
+5. Provide specific, actionable advice with step-by-step guidance.
+6. If the query relates to ongoing/pending matters (e.g., road safety regulations,
+   MVA 2019 implementation challenges), discuss the ONGOING STATUS.
 
 === USER QUERY ===
 {query}
@@ -190,15 +193,16 @@ and procedures for contesting traffic tickets.
 {rejection_str}
 
 === OUTPUT FORMAT ===
-1. EXECUTIVE SUMMARY
-2. APPLICABLE TRAFFIC / MVA PROVISIONS
-3. VIOLATION ANALYSIS & PENALTIES
-4. CASE ANALYSIS
-5. REJECTED PRECEDENTS
-6. CONTESTING THE CHALLAN / TICKET (Strategy)
-7. LICENCE & INSURANCE IMPLICATIONS
-8. RISK ASSESSMENT
-9. CONCLUSION
+1. EXECUTIVE SUMMARY (thorough 4-5 sentences)
+2. APPLICABLE TRAFFIC / MVA PROVISIONS (explain each section)
+3. VIOLATION ANALYSIS & PENALTIES (detailed breakdown)
+4. DETAILED CASE ANALYSIS (for each case: facts, ratio, application)
+5. REJECTED PRECEDENTS (why overruled and what replaced them)
+6. CONTESTING STRATEGY (step-by-step with courts, documents, timelines)
+7. LICENCE & INSURANCE IMPLICATIONS (detailed)
+8. ONGOING DEVELOPMENTS (if any related MVA/traffic matter is pending)
+9. RISK ASSESSMENT (honest analysis)
+10. CONCLUSION (clear recommendation with next steps)
 """
 
     try:

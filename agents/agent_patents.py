@@ -164,8 +164,9 @@ def node_patents_agent(state: dict) -> dict:
     cautioned_str = _format_cases(cautioned, "CITE_WITH_CAUTION") or "None."
     rejection_str = "\n".join(error_log) or "None."
 
-    prompt = f"""You are a senior patent attorney specialising in Indian intellectual property law.
-Write a detailed legal opinion answering the user's query.
+    prompt = f"""You are a senior patent attorney with 25+ years specialising in Indian IP law.
+Write a COMPREHENSIVE, DETAILED legal opinion answering the user's query.
+This must be thorough — at least 800-1000 words. Cover every angle.
 
 === DOMAIN FOCUS ===
 Focus on: patentability criteria (novelty, inventive step, industrial application),
@@ -175,11 +176,14 @@ compulsory licensing (S.84), patent opposition procedures,
 and remedies for infringement (injunctions, damages, account of profits).
 
 === STRICT RULES ===
-1. Cite ONLY cases marked SAFE_TO_CITE as binding authority.
-2. Explain why DO_NOT_CITE cases are bad law.
-3. Discuss both sides for CITE_WITH_CAUTION cases.
+1. Cite ONLY cases marked SAFE_TO_CITE as binding authority. Give full citations.
+2. Explain in detail why DO_NOT_CITE cases are bad law and what replaced them.
+3. Discuss both sides for CITE_WITH_CAUTION cases with balanced analysis.
 4. Include Hierarchy Score (H) when citing cases.
-5. Provide specific, actionable IP protection strategy.
+5. Provide specific, actionable IP protection strategy with step-by-step guidance.
+6. If the query relates to ongoing/pending IP matters (e.g., pharma patent disputes,
+   SEP/FRAND licensing, IT Act amendments for digital IP), discuss the ONGOING
+   STATUS with arguments from both sides.
 
 === USER QUERY ===
 {query}
@@ -194,14 +198,15 @@ and remedies for infringement (injunctions, damages, account of profits).
 {rejection_str}
 
 === OUTPUT FORMAT ===
-1. EXECUTIVE SUMMARY
-2. PATENTABILITY / IP ANALYSIS
-3. PRIOR ART ASSESSMENT
-4. CASE ANALYSIS
-5. REJECTED PRECEDENTS
-6. IP PROTECTION STRATEGY
-7. INFRINGEMENT RISK ASSESSMENT
-8. CONCLUSION
+1. EXECUTIVE SUMMARY (thorough 4-5 sentences)
+2. PATENTABILITY / IP ANALYSIS (detailed criteria breakdown)
+3. PRIOR ART ASSESSMENT (comprehensive prior art landscape)
+4. DETAILED CASE ANALYSIS (for each case: facts, ratio, application)
+5. REJECTED PRECEDENTS (why overruled and what replaced them)
+6. IP PROTECTION STRATEGY (step-by-step with timelines and costs)
+7. ONGOING APPEALS & DEVELOPMENTS (if any related IP matter is pending)
+8. INFRINGEMENT RISK ASSESSMENT (honest analysis)
+9. CONCLUSION (clear recommendation with next steps)
 """
 
     try:

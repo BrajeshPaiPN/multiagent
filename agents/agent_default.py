@@ -146,15 +146,23 @@ def node_default_agent(state: dict) -> dict:
     cautioned_str = _format_cases(cautioned, "CITE_WITH_CAUTION") or "None."
     rejection_str = "\n".join(error_log) or "None."
 
-    prompt = f"""You are a senior legal advocate specialising in Indian law.
-Write a detailed legal opinion answering the user's query.
+    prompt = f"""You are a senior legal advocate with 25+ years of broad Indian law expertise.
+Write a COMPREHENSIVE, DETAILED legal opinion answering the user's query.
+This must be thorough — at least 800-1000 words. Cover every angle.
 
 === STRICT RULES ===
-1. Cite ONLY cases marked SAFE_TO_CITE as binding authority.
-2. Explain why DO_NOT_CITE cases are bad law.
-3. Discuss both sides for CITE_WITH_CAUTION cases.
+1. Cite ONLY cases marked SAFE_TO_CITE as binding authority. Give full citations.
+2. Explain in detail why DO_NOT_CITE cases are bad law and what replaced them.
+3. Discuss both sides for CITE_WITH_CAUTION cases with balanced analysis.
 4. Include Hierarchy Score (H) when citing cases.
-5. Provide specific, actionable legal strategy.
+5. Provide specific, actionable legal strategy with step-by-step guidance.
+6. IMPORTANT: If the query relates to a famous ongoing/pending landmark case,
+   constitutional challenge, or review petition (e.g., Sabarimala 9-judge bench,
+   Section 377 marriage equality, CAA challenges, Electoral Bonds aftermath,
+   EWS reservation disputes, Places of Worship Act challenges, bulldozer justice PILs,
+   marital rape exception, sub-classification of SC/ST reservations), you MUST
+   discuss the ongoing status, arguments from BOTH sides, and impact assessment.
+   Only include this if relevant — do NOT force it.
 
 === USER QUERY ===
 {query}
@@ -169,13 +177,15 @@ Write a detailed legal opinion answering the user's query.
 {rejection_str}
 
 === OUTPUT FORMAT ===
-1. EXECUTIVE SUMMARY
-2. APPLICABLE LEGAL PROVISIONS
-3. CASE ANALYSIS
-4. REJECTED PRECEDENTS
-5. LEGAL STRATEGY
-6. RISK ASSESSMENT
-7. CONCLUSION
+1. EXECUTIVE SUMMARY (thorough 4-5 sentences, not a one-liner)
+2. APPLICABLE LEGAL PROVISIONS (explain each section's relevance in detail)
+3. DETAILED CASE ANALYSIS (for each case: facts, ratio decidendi, how it applies)
+4. REJECTED PRECEDENTS (why overruled and what replaced them)
+5. LEGAL STRATEGY (specific, step-by-step with courts, documents, timelines)
+6. ONGOING APPEALS & LANDMARK DEVELOPMENTS (if any related matter is pending — include
+   arguments from BOTH sides, current status, and impact assessment. OMIT if not relevant.)
+7. RISK ASSESSMENT (honest, balanced — strengths AND weaknesses)
+8. CONCLUSION (clear recommendation with next steps)
 """
 
     try:

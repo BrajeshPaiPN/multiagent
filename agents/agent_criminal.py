@@ -165,8 +165,9 @@ def node_criminal_agent(state: dict) -> dict:
     cautioned_str = _format_cases(cautioned, "CITE_WITH_CAUTION") or "None."
     rejection_str = "\n".join(error_log) or "None."
 
-    prompt = f"""You are a senior criminal-law advocate specialising in Indian criminal law.
-Write a detailed legal opinion answering the user's query.
+    prompt = f"""You are a senior criminal-law advocate with 25+ years specialising in Indian criminal law.
+Write a COMPREHENSIVE, DETAILED legal opinion answering the user's query.
+This must be thorough — at least 800-1000 words. Cover every angle.
 
 === DOMAIN FOCUS ===
 Focus on: mens rea, actus reus, bail conditions (regular / anticipatory / interim),
@@ -174,11 +175,15 @@ relevant IPC/BNS/BNSS/CrPC sections, evidentiary burden, FIR procedures,
 chargesheet timelines, sentencing guidelines, and parole eligibility.
 
 === STRICT RULES ===
-1. Cite ONLY cases marked SAFE_TO_CITE as binding authority.
-2. Explain why DO_NOT_CITE cases are bad law.
-3. Discuss both sides for CITE_WITH_CAUTION cases.
+1. Cite ONLY cases marked SAFE_TO_CITE as binding authority. Give full citations.
+2. Explain in detail why DO_NOT_CITE cases are bad law and what replaced them.
+3. Discuss both sides for CITE_WITH_CAUTION cases with balanced analysis.
 4. Include Hierarchy Score (H) when citing cases.
-5. Provide specific, actionable criminal-defence / prosecution strategy.
+5. Provide specific, actionable criminal-defence / prosecution strategy with step-by-step guidance.
+6. If the query relates to a famous ongoing/pending criminal case or a constitutional
+   challenge in criminal law (e.g., Section 377, marital rape exception, death penalty
+   moratorium, sedition law S.124A repeal), discuss the ONGOING STATUS with arguments
+   from both sides and current procedural position before the court.
 
 === USER QUERY ===
 {query}
@@ -193,14 +198,15 @@ chargesheet timelines, sentencing guidelines, and parole eligibility.
 {rejection_str}
 
 === OUTPUT FORMAT ===
-1. EXECUTIVE SUMMARY
-2. APPLICABLE CRIMINAL PROVISIONS
-3. CASE ANALYSIS
-4. REJECTED PRECEDENTS
-5. CRIMINAL DEFENCE / PROSECUTION STRATEGY
-6. BAIL ANALYSIS (if applicable)
-7. RISK ASSESSMENT
-8. CONCLUSION
+1. EXECUTIVE SUMMARY (thorough 4-5 sentences, not a one-liner)
+2. APPLICABLE CRIMINAL PROVISIONS (explain each section's relevance)
+3. DETAILED CASE ANALYSIS (for each case: facts, ratio, how it applies here)
+4. REJECTED PRECEDENTS (why they were overruled and what replaced them)
+5. CRIMINAL DEFENCE / PROSECUTION STRATEGY (specific, step-by-step)
+6. BAIL ANALYSIS (if applicable — type, conditions, likely outcome, precedents)
+7. ONGOING APPEALS & DEVELOPMENTS (if any related landmark matter is pending before SC/HC)
+8. RISK ASSESSMENT (honest assessment of strengths and weaknesses)
+9. CONCLUSION (clear recommendation with next steps)
 """
 
     try:

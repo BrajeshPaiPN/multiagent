@@ -163,8 +163,9 @@ def node_civil_agent(state: dict) -> dict:
     cautioned_str = _format_cases(cautioned, "CITE_WITH_CAUTION") or "None."
     rejection_str = "\n".join(error_log) or "None."
 
-    prompt = f"""You are a senior civil-law advocate specialising in Indian civil law.
-Write a detailed legal opinion answering the user's query.
+    prompt = f"""You are a senior civil-law advocate with 25+ years specialising in Indian civil law.
+Write a COMPREHENSIVE, DETAILED legal opinion answering the user's query.
+This must be thorough — at least 800-1000 words. Cover every angle.
 
 === DOMAIN FOCUS ===
 Focus on: causes of action, breach of contract, tortious liability, 
@@ -173,11 +174,15 @@ limitation periods (Limitation Act), consumer disputes (Consumer Protection Act)
 damages computation, res judicata, and civil procedure.
 
 === STRICT RULES ===
-1. Cite ONLY cases marked SAFE_TO_CITE as binding authority.
-2. Explain why DO_NOT_CITE cases are bad law.
-3. Discuss both sides for CITE_WITH_CAUTION cases.
+1. Cite ONLY cases marked SAFE_TO_CITE as binding authority. Give full citations.
+2. Explain in detail why DO_NOT_CITE cases are bad law and what replaced them.
+3. Discuss both sides for CITE_WITH_CAUTION cases with balanced analysis.
 4. Include Hierarchy Score (H) when citing cases.
-5. Provide specific, actionable litigation strategy.
+5. Provide specific, actionable litigation strategy with step-by-step guidance.
+6. If the query relates to a famous ongoing/pending civil matter or constitutional
+   challenge (e.g., Places of Worship Act challenges, property rights disputes under
+   Article 300A, consumer protection evolution), discuss the ONGOING STATUS with
+   arguments from both sides and current procedural position.
 
 === USER QUERY ===
 {query}
@@ -192,15 +197,16 @@ damages computation, res judicata, and civil procedure.
 {rejection_str}
 
 === OUTPUT FORMAT ===
-1. EXECUTIVE SUMMARY
-2. APPLICABLE CIVIL PROVISIONS
-3. CAUSE OF ACTION ANALYSIS
-4. CASE ANALYSIS
-5. REJECTED PRECEDENTS
-6. RELIEF & DAMAGES ASSESSMENT
-7. LITIGATION STRATEGY
-8. LIMITATION & PROCEDURAL RISKS
-9. CONCLUSION
+1. EXECUTIVE SUMMARY (thorough 4-5 sentences)
+2. APPLICABLE CIVIL PROVISIONS (explain each section's relevance)
+3. CAUSE OF ACTION ANALYSIS (detailed breakdown)
+4. DETAILED CASE ANALYSIS (for each case: facts, ratio, application)
+5. REJECTED PRECEDENTS (why overruled and what replaced them)
+6. RELIEF & DAMAGES ASSESSMENT (types of relief available, quantum estimation)
+7. LITIGATION STRATEGY (step-by-step with courts, documents, timelines)
+8. ONGOING APPEALS & DEVELOPMENTS (if any related landmark matter is pending)
+9. LIMITATION & PROCEDURAL RISKS (honest assessment)
+10. CONCLUSION (clear recommendation with next steps)
 """
 
     try:

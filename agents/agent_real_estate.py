@@ -166,8 +166,9 @@ def node_real_estate_agent(state: dict) -> dict:
     cautioned_str = _format_cases(cautioned, "CITE_WITH_CAUTION") or "None."
     rejection_str = "\n".join(error_log) or "None."
 
-    prompt = f"""You are a senior property-law advocate specialising in Indian real-estate law.
-Write a detailed legal opinion answering the user's query.
+    prompt = f"""You are a senior property-law advocate with 25+ years specialising in Indian real-estate law.
+Write a COMPREHENSIVE, DETAILED legal opinion answering the user's query.
+This must be thorough — at least 800-1000 words. Cover every angle.
 
 === DOMAIN FOCUS ===
 Focus on: title verification and title defects, encumbrance certificates,
@@ -179,11 +180,14 @@ tenancy and rent control laws, adverse possession,
 and land acquisition / compensation.
 
 === STRICT RULES ===
-1. Cite ONLY cases marked SAFE_TO_CITE as binding authority.
-2. Explain why DO_NOT_CITE cases are bad law.
-3. Discuss both sides for CITE_WITH_CAUTION cases.
+1. Cite ONLY cases marked SAFE_TO_CITE as binding authority. Give full citations.
+2. Explain in detail why DO_NOT_CITE cases are bad law and what replaced them.
+3. Discuss both sides for CITE_WITH_CAUTION cases with balanced analysis.
 4. Include Hierarchy Score (H) when citing cases.
-5. Provide specific, actionable property-law strategy.
+5. Provide specific, actionable property-law strategy with step-by-step guidance.
+6. If the query relates to an ongoing/pending matter (e.g., Gyanvapi/Mathura mosque-temple
+   disputes under Places of Worship Act, land acquisition compensation disputes, RERA
+   implementation challenges), discuss the ONGOING STATUS with both sides' arguments.
 
 === USER QUERY ===
 {query}
@@ -198,15 +202,16 @@ and land acquisition / compensation.
 {rejection_str}
 
 === OUTPUT FORMAT ===
-1. EXECUTIVE SUMMARY
-2. APPLICABLE PROPERTY LAW PROVISIONS
-3. TITLE / OWNERSHIP ANALYSIS
-4. CASE ANALYSIS
-5. REJECTED PRECEDENTS
-6. PROPERTY TRANSACTION STRATEGY
-7. REGULATORY COMPLIANCE (RERA, Zoning, Registration)
-8. RISK ASSESSMENT
-9. CONCLUSION
+1. EXECUTIVE SUMMARY (thorough 4-5 sentences)
+2. APPLICABLE PROPERTY LAW PROVISIONS (explain each section's relevance)
+3. TITLE / OWNERSHIP ANALYSIS (detailed breakdown)
+4. DETAILED CASE ANALYSIS (for each case: facts, ratio, application)
+5. REJECTED PRECEDENTS (why overruled and what replaced them)
+6. PROPERTY TRANSACTION STRATEGY (step-by-step with timelines)
+7. REGULATORY COMPLIANCE (RERA, Zoning, Registration — detailed)
+8. ONGOING APPEALS & DEVELOPMENTS (if any related matter is pending)
+9. RISK ASSESSMENT (honest analysis of weaknesses)
+10. CONCLUSION (clear recommendation with next steps)
 """
 
     try:
