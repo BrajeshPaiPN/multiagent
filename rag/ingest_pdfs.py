@@ -26,11 +26,15 @@ def extract_text_from_pdf(pdf_path: str) -> str:
     """Extracts text using PyPDF2 with a fallback to OCR for scanned documents."""
     text = ""
     try:
-        reader = PdfReader(pdf_path)
+        # Disable strict mode to handle PDFs with missing EOF markers or other minor corruptions
+        reader = PdfReader(pdf_path, strict=False)
         for page in reader.pages:
-            page_text = page.extract_text()
-            if page_text:
-                text += page_text + "\n"
+            try:
+                page_text = page.extract_text()
+                if page_text:
+                    text += page_text + "\n"
+            except Exception as e_page:
+                print(f"    [!] Page extraction error in {os.path.basename(pdf_path)}: {e_page}")
     except Exception as e:
         print(f"    [!] PyPDF2 failed for {os.path.basename(pdf_path)}: {e}")
 
@@ -57,9 +61,9 @@ def run_ingestion():
         print(f"[!] Upload directory '{UPLOAD_DIR}' not found.")
         return
 
-    pdf_files = [f for f in os.listdir(UPLOAD_DIR) if f.lower().endswith(".pdf")]
+    pdf_files = [f for f in os.listdir(UPLOAD_DIR) if f.lower().endswith((".pdf", ".txt"))]
     if not pdf_files:
-        print("[!] No PDF files found in uploads directory.")
+        print("[!] No documents found in uploads directory.")
         return
 
     print(f"[*] Found {len(pdf_files)} legal documents to process.", flush=True)
@@ -75,7 +79,16 @@ def run_ingestion():
         path = os.path.join(UPLOAD_DIR, filename)
         print(f"[*] Extracting: {filename} ...", flush=True)
         
-        raw_text = extract_text_from_pdf(path)
+        if filename.lower().endswith(".pdf"):
+            raw_text = extract_text_from_pdf(path)
+        else:
+            # Handle plain text files
+            try:
+                with open(path, 'r', encoding='utf-8') as f:
+                    raw_text = f.read()
+            except Exception as e:
+                print(f"    [!] Failed to read {filename}: {e}")
+                continue
         if not raw_text.strip():
             print(f"    [!] Skipped {filename}: No text content.")
             continue
