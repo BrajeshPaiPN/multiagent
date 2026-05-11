@@ -1,0 +1,812 @@
+{
+  "dataset": "hallucination_cases_large.csv",
+  "model": "llama-3.1-8b-instant",
+  "metrics": {
+    "total": 100,
+    "llm_accuracy": 0.28,
+    "akgp_accuracy": 1.0,
+    "hallucination_prevention_rate": 1.0
+  },
+  "details": [
+    {
+      "case": "Jadu Gopal Chakravarthy (Dead) After ... vs Pannalal Bhowmick And Ors",
+      "is_real": true,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Bikramjit Singh vs The State Of Punjab",
+      "is_real": true,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": true,
+      "akgp_correct": true
+    },
+    {
+      "case": "Hamsaanandini Nanduri vs Union Of India",
+      "is_real": true,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Ajay Kumar Choudhary vs Union Of India Thr Its Secretary & Anr",
+      "is_real": true,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": true,
+      "akgp_correct": true
+    },
+    {
+      "case": "Ravindra Ramchandra Waghmare vs Indore Mun.Corp.& Ors",
+      "is_real": true,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Surinder Singh Deswal @ Col. S. S. Deswal vs Virender Gandhi",
+      "is_real": true,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": true,
+      "akgp_correct": true
+    },
+    {
+      "case": "Prathvi Raj Chauhan vs Union Of India",
+      "is_real": true,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Jharkhand State Housing Board vs Shri Didar Singh",
+      "is_real": true,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": true,
+      "akgp_correct": true
+    },
+    {
+      "case": "People'S Union Of Civil Liberties ... vs Union Of India & Anr",
+      "is_real": true,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": true,
+      "akgp_correct": true
+    },
+    {
+      "case": "Ishwari Lal Yadav vs State Of Chhattisgarh",
+      "is_real": true,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Rashmi Ajay Kr.Kesharwani vs Ajay Kr.Kesharwani And Ors",
+      "is_real": true,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": true,
+      "akgp_correct": true
+    },
+    {
+      "case": "Mahmadhusen Abdulrahim Kalota Shaikh vs Union Of India & Ors",
+      "is_real": true,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Vineeta Sharma vs Rakesh Sharma",
+      "is_real": true,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": true,
+      "akgp_correct": true
+    },
+    {
+      "case": "Santokh Singh vs Delhi Administration",
+      "is_real": true,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "State Tr.P.S.Lodhi Colony,New Delhi vs Sanjeev Nanda",
+      "is_real": true,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": true,
+      "akgp_correct": true
+    },
+    {
+      "case": "The State Of West Bengal vs Anwar All Sarkarhabib Mohamed,The ...",
+      "is_real": true,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "The Home Secretary (Prison) vs H. Nilofer Nisha",
+      "is_real": true,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": true,
+      "akgp_correct": true
+    },
+    {
+      "case": "Surya Vadanan vs State Of Tamilnadu & Ors",
+      "is_real": true,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Dayal Singh & Ors vs Union Of India & Ors",
+      "is_real": true,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Union Of India & Ors vs Shiv Raj & Ors",
+      "is_real": true,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": true,
+      "akgp_correct": true
+    },
+    {
+      "case": "R.K.Anand vs Registrar,Delhi High Court",
+      "is_real": true,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "People`S Union For Civilliberties ... vs The Union Of India And Another",
+      "is_real": true,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": true,
+      "akgp_correct": true
+    },
+    {
+      "case": "Mohinuddin @ Moin Master vs District Magistrate, Beed & Ors",
+      "is_real": true,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": true,
+      "akgp_correct": true
+    },
+    {
+      "case": "Sapmawia vs Deputy Commissioner, Aijal",
+      "is_real": true,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": true,
+      "akgp_correct": true
+    },
+    {
+      "case": "Gujarat Steel Tubes Ltd vs Gujarat Steel Tubes Mazdoor Sabha",
+      "is_real": true,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "State Of Punjab And Anr vs Khan Chand",
+      "is_real": true,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": true,
+      "akgp_correct": true
+    },
+    {
+      "case": "Harjinder Singh vs Punjab State Warehousing Corp",
+      "is_real": true,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "I.C. Golak Nath And Ors. vs State Of Punjab And Anr.",
+      "is_real": true,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": true,
+      "akgp_correct": true
+    },
+    {
+      "case": "Sardar Syedna Taher Saifuddin Saheb vs The State Of Bombay",
+      "is_real": true,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "E. P. Royappa vs State Of Tamil Nadu & Anr",
+      "is_real": true,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Ajit Mohan vs Legislative Assembly, National ...",
+      "is_real": true,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": true,
+      "akgp_correct": true
+    },
+    {
+      "case": "Tejaswini Gaud vs Shekhar Jagdish Prasad Tewari",
+      "is_real": true,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Union Of India vs Nihar Kanta Sen & Ors",
+      "is_real": true,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": true,
+      "akgp_correct": true
+    },
+    {
+      "case": "R.P. Kapur vs Pratap Singh Kairon And Others",
+      "is_real": true,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": true,
+      "akgp_correct": true
+    },
+    {
+      "case": "Society For Un-Aided P.School Of Raj vs U.O.I & Anr",
+      "is_real": true,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Anokhilal vs The State Of Madhya Pradesh",
+      "is_real": true,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": true,
+      "akgp_correct": true
+    },
+    {
+      "case": "Secretary Irrigation Department ... vs G.C. Roy",
+      "is_real": true,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Raj Pal Singh vs Commissioner Of Income Tax Haryana",
+      "is_real": true,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": true,
+      "akgp_correct": true
+    },
+    {
+      "case": "State Of Punjab vs Davinder Pal Singh Bhullar & Ors.Etc",
+      "is_real": true,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Har Shankar & Ors. Etc. Etc vs The Dy. Excise & Taxation Commr. & Ors",
+      "is_real": true,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": true,
+      "akgp_correct": true
+    },
+    {
+      "case": "Rama Meru And Another vs State Of Gujarat",
+      "is_real": true,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": true,
+      "akgp_correct": true
+    },
+    {
+      "case": "Kishore Samrite vs State Of U.P. & Ors",
+      "is_real": true,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Popular Muthiah vs State Represented By Inspector Of ...",
+      "is_real": true,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": true,
+      "akgp_correct": true
+    },
+    {
+      "case": "Rohith Thammana Gowda vs The State Of Karnataka",
+      "is_real": true,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": true,
+      "akgp_correct": true
+    },
+    {
+      "case": "Ex-Capt. Harish Uppal vs Union Of India & Anr",
+      "is_real": true,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Danial Latifi & Anr vs Union Of India",
+      "is_real": true,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Kishan Chand Arora vs Commissioner Of Police, Calcutta",
+      "is_real": true,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": true,
+      "akgp_correct": true
+    },
+    {
+      "case": "K.P. Varghese vs The Income Tax Officer,Ernakulam, And ...",
+      "is_real": true,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": true,
+      "akgp_correct": true
+    },
+    {
+      "case": "Dhal Singh Dewangan vs State Of Chhattisgarh",
+      "is_real": true,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": true,
+      "akgp_correct": true
+    },
+    {
+      "case": "Abp Pvt.Ltd.& Anr vs Union Of India & Ors",
+      "is_real": true,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "VERIFIED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Internet Freedom Foundation v. State of Karnataka",
+      "is_real": false,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Rural Development Society v. State of Tamil Nadu",
+      "is_real": false,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "National Farmers Welfare Association v. Ministry of Finance",
+      "is_real": false,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Tech Freedom Initiative v. National Investigation Agency",
+      "is_real": false,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Small Traders Federation of India v. State of Karnataka",
+      "is_real": false,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "National Parents Association v. State of Delhi",
+      "is_real": false,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Digital Rights Foundation v. National Highway Authority",
+      "is_real": false,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Consumer Rights Federation v. Reserve Bank of India",
+      "is_real": false,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Digital Rights Foundation v. Reserve Bank of India",
+      "is_real": false,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Internet Freedom Foundation v. State of Karnataka",
+      "is_real": false,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Internet Freedom Foundation v. State of West Bengal",
+      "is_real": false,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Consumer Rights Federation v. Department of Telecommunications",
+      "is_real": false,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Urban Residents Welfare Board v. National Investigation Agency",
+      "is_real": false,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Healthcare Workers Union v. Central Bureau of Investigation",
+      "is_real": false,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Association of Democratic Reforms v. Central Bureau of Investigation",
+      "is_real": false,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Indian Civil Liberties Union v. State of Uttar Pradesh",
+      "is_real": false,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Association of Democratic Reforms v. Food Corporation of India",
+      "is_real": false,
+      "llm_verdict": "HALLUCINATED",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": true,
+      "akgp_correct": true
+    },
+    {
+      "case": "Tech Freedom Initiative v. State of Maharashtra",
+      "is_real": false,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Urban Residents Welfare Board v. Reserve Bank of India",
+      "is_real": false,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "All India Women's Rights Council v. Food Corporation of India",
+      "is_real": false,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Migrant Labour Protection Forum v. State of Uttar Pradesh",
+      "is_real": false,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "All India Women's Rights Council v. State of Kerala",
+      "is_real": false,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Rural Development Society v. Ministry of Finance",
+      "is_real": false,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Digital Rights Foundation v. Reserve Bank of India",
+      "is_real": false,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Rural Development Society v. State of Karnataka",
+      "is_real": false,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "All India Women's Rights Council v. State of Tamil Nadu",
+      "is_real": false,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Healthcare Workers Union v. State of West Bengal",
+      "is_real": false,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Indian Civil Liberties Union v. Securities and Exchange Board of India",
+      "is_real": false,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "All India Women's Rights Council v. Ministry of Environment",
+      "is_real": false,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Small Traders Federation of India v. Ministry of Environment",
+      "is_real": false,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "National Human Rights Commission (Petitioner) v. Ministry of Finance",
+      "is_real": false,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Rural Development Society v. Central Vigilance Commission",
+      "is_real": false,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Urban Residents Welfare Board v. Securities and Exchange Board of India",
+      "is_real": false,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Migrant Labour Protection Forum v. Union of India",
+      "is_real": false,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "All India Women's Rights Council v. Securities and Exchange Board of India",
+      "is_real": false,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Consumer Rights Federation v. Ministry of Home Affairs",
+      "is_real": false,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Citizens Forum for Transparency v. State of Maharashtra",
+      "is_real": false,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "All India Women's Rights Council v. State of Karnataka",
+      "is_real": false,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Internet Freedom Foundation v. State of Karnataka",
+      "is_real": false,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Tech Freedom Initiative v. Election Commission of India",
+      "is_real": false,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "All India Women's Rights Council v. Election Commission of India",
+      "is_real": false,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "All India Women's Rights Council v. National Highway Authority",
+      "is_real": false,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Migrant Labour Protection Forum v. State of Kerala",
+      "is_real": false,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Tech Freedom Initiative v. State of Karnataka",
+      "is_real": false,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Citizens Forum for Transparency v. Reserve Bank of India",
+      "is_real": false,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "National Human Rights Commission (Petitioner) v. Union of India",
+      "is_real": false,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "All India Women's Rights Council v. Securities and Exchange Board of India",
+      "is_real": false,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Digital Rights Foundation v. Central Vigilance Commission",
+      "is_real": false,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "Small Traders Federation of India v. Ministry of Finance",
+      "is_real": false,
+      "llm_verdict": "VERIFIED",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    },
+    {
+      "case": "National Parents Association v. Reserve Bank of India",
+      "is_real": false,
+      "llm_verdict": "ERROR",
+      "akgp_verdict": "HALLUCINATED",
+      "llm_correct": false,
+      "akgp_correct": true
+    }
+  ]
+}

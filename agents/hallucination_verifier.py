@@ -99,7 +99,7 @@ def verify_cases_in_drafts(expert_drafts: list) -> tuple[list, list, list]:
         if graph_record:
             overrulers = graph_record.get("overrulers", [])
             if overrulers:
-                # Deterministic Rejection: Case is known to be overruled
+                # Tier 0: DETERMINISTIC REJECTION (Overruled)
                 print(f"    🚫 REJECTED (GRAPH): {case_name} [OVERRULED by {overrulers[0]['name']}]")
                 hallucinated.append({
                     "case_name": case_name,
@@ -108,7 +108,7 @@ def verify_cases_in_drafts(expert_drafts: list) -> tuple[list, list, list]:
                 })
                 continue
             else:
-                # Deterministic Verification: Case exists in validated graph
+                # Tier 1: DETERMINISTIC VERIFICATION (Gold Standard)
                 print(f"    🏆 VERIFIED (GRAPH): {case_name}")
                 verified.append({
                     "case_name": case_name,
@@ -118,33 +118,33 @@ def verify_cases_in_drafts(expert_drafts: list) -> tuple[list, list, list]:
                 })
                 continue
 
+        # Step 2: Fallback to Dual-LLM Consensus (Tier 2)
         v1 = verify_case_once(llm_v1, case_name)
         v2 = verify_case_once(llm_v2, case_name)
 
-        # Scoring: both must agree to be considered verified
         both_confirm = v1.exists and v2.exists
-        both_deny    = (not v1.exists) and (not v2.exists)
         avg_conf     = (v1.confidence + v2.confidence) / 2
 
         result = {
             "case_name":       case_name,
-            "v1_verdict":      v1.exists,
-            "v2_verdict":      v2.exists,
             "avg_confidence":  round(avg_conf, 2),
-            "v1_reasoning":    v1.reasoning,
-            "v2_reasoning":    v2.reasoning,
+            "reasoning":       f"Probabilistic consensus between {LLM_VERIFIER_V1} and {LLM_VERIFIER_V2}.",
             "correct_citation": v1.correct_citation if v1.exists else v2.correct_citation,
         }
 
-        if both_confirm and avg_conf >= 0.7:
-            result["status"] = "VERIFIED"
+        if both_confirm and avg_conf >= 0.85:
+            # Tier 2: PROBABILISTIC VERIFICATION (Silver Standard)
+            # Higher threshold (0.85) to minimize hallucinations
+            result["status"] = "PROBABILISTIC_VERIFICATION"
             verified.append(result)
-            print(f"    ✅ VERIFIED   ({avg_conf:.0%}): {case_name[:60]}")
-        elif both_deny and avg_conf >= 0.6:
+            print(f"    🥈 PROBABILISTIC ({avg_conf:.0%}): {case_name[:60]}")
+        elif not v1.exists and not v2.exists:
+            # Tier 4: HALLUCINATION
             result["status"] = "HALLUCINATION"
             hallucinated.append(result)
             print(f"    ❌ HALLUCINATED ({avg_conf:.0%}): {case_name[:60]}")
         else:
+            # Tier 3: UNCERTAIN
             result["status"] = "UNCERTAIN"
             uncertain.append(result)
             print(f"    ⚠️  UNCERTAIN  ({avg_conf:.0%}): {case_name[:60]}")
@@ -193,14 +193,17 @@ def node_hallucination_verifier(state: dict) -> dict:
 
     # Annotate the drafts with a verification report
     verification_report = ""
-    if verified:
-        verification_report += f"\n✅ {len(verified)} cases independently VERIFIED by 2 AI agents.\n"
+    graph_v = [v for v in verified if v["status"] == "VERIFIED_BY_GRAPH"]
+    prob_v = [v for v in verified if v["status"] == "PROBABILISTIC_VERIFICATION"]
+
+    if graph_v:
+        verification_report += f"\n🏆 {len(graph_v)} DETERMINISTIC VERIFICATIONS (AKGP Gold Standard)\n"
+    if prob_v:
+        verification_report += f"\n🥈 {len(prob_v)} PROBABILISTIC VERIFICATIONS (Dual-LLM Silver Standard)\n"
     if hallucinated:
-        verification_report += f"\n❌ {len(hallucinated)} HALLUCINATED citations removed:\n"
-        for h in hallucinated:
-            verification_report += f"  - {h['case_name']} (flagged as non-existent)\n"
+        verification_report += f"\n❌ {len(hallucinated)} HALLUCINATIONS BLOCKED\n"
     if uncertain:
-        verification_report += f"\n⚠️ {len(uncertain)} citations UNCERTAIN — cited with caution.\n"
+        verification_report += f"\n⚠️ {len(uncertain)} UNCERTAIN CITATIONS (Proceed with caution)\n"
 
     print(f"\n    Summary: {len(verified)} verified | {len(hallucinated)} hallucinated | {len(uncertain)} uncertain")
 

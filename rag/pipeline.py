@@ -28,7 +28,19 @@ def _get_vector_store():
             return None
             
         if _EMBEDDINGS is None:
-            _EMBEDDINGS = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
+            try:
+                from config import GOOGLE_API_KEY
+                _EMBEDDINGS = GoogleGenerativeAIEmbeddings(
+                    model="models/text-embedding-004",
+                    google_api_key=GOOGLE_API_KEY
+                )
+                _EMBEDDINGS.embed_query("test")
+            except Exception as e:
+                print(f"[RAG] Embedding model 004 failed: {e}. Trying 001...")
+                _EMBEDDINGS = GoogleGenerativeAIEmbeddings(
+                    model="models/embedding-001",
+                    google_api_key=GOOGLE_API_KEY
+                )
             
         _VECTOR_STORE = FAISS.load_local(
             INDEX_PATH, 
