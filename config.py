@@ -79,10 +79,10 @@ LLM_VERIFIER_V1 = "llama-3.1-8b-instant"   # Fast first-pass
 LLM_VERIFIER_V2 = "llama3-8b-8192"         # Independent check
 
 # Stage 4: Master synthesizer (deep reasoning, sequential execution so 12K TPM limit is fine)
-LLM_MASTER = "llama-3.3-70b-versatile"
+LLM_MASTER = "llama3-70b-8192"
 
 # Stage 5: Critic (Independent high-parameter model for unbiased review)
-LLM_CRITIC = "llama3-70b-8192"
+LLM_CRITIC = "gemma2-9b-it"
 
 # Stage 6: Contract analysis (Google AI, massive context)
 GEMINI_MODEL = "gemini-2.5-flash"
