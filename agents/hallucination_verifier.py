@@ -10,7 +10,7 @@ This runs AFTER the expert agents produce drafts, BEFORE synthesis.
 
 from langchain_groq import ChatGroq
 from pydantic import BaseModel, Field
-from config import LLM_ANALYZER
+from config import LLM_VERIFIER_V1, LLM_VERIFIER_V2
 from akgp.graph_manager import AKGPGraphManager
 
 
@@ -83,9 +83,10 @@ def verify_cases_in_drafts(expert_drafts: list) -> tuple[list, list, list]:
 
     print(f"\n    [VERIFIER] Found {len(all_cases)} case citations to verify...")
 
-    # Two independent LLM instances (different temperature = different perspective)
-    llm_v1 = ChatGroq(model=LLM_ANALYZER, temperature=0)
-    llm_v2 = ChatGroq(model=LLM_ANALYZER, temperature=0.3)
+    # Two independent LLM instances — different model families to prevent correlated errors:
+    # v1: Llama 3.1 8b (Meta)  vs  v2: Gemma2 9b (Google) — architecturally independent
+    llm_v1 = ChatGroq(model=LLM_VERIFIER_V1, temperature=0)
+    llm_v2 = ChatGroq(model=LLM_VERIFIER_V2, temperature=0)
 
     verified, hallucinated, uncertain = [], [], []
 

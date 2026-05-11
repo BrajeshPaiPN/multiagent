@@ -41,15 +41,50 @@ if GROQ_API_KEY:
     os.environ["GROQ_API_KEY"] = GROQ_API_KEY
 
 # ==========================================
-# LLM MODELS
+# LLM MODELS — Heterogeneous Multi-Model Strategy
 # ==========================================
-# llama3-8b-8192 was decommissioned by Groq on 2025-04-30.
-# Replacement: llama-3.1-8b-instant (same speed, same free tier)
-LLM_ROUTER = "llama-3.1-8b-instant"
-LLM_ANALYZER = "llama-3.1-8b-instant"
-LLM_SYNTHESIZER = "llama-3.1-8b-instant"
+# Using different model families at each pipeline stage to prevent
+# single-model bias and distribute reasoning across architectures.
+#
+# Pipeline stages:
+#   1. ROUTER / EXTRACTION  → llama-3.1-8b-instant (Groq)
+#      Low token task, fast structured output, ~500 tokens
+#
+#   2. SPECIALIST SYNTHESIS → llama-3.3-70b-versatile (Groq)
+#      Complex long-form legal reasoning, 32k context window
+#      Different model family from extraction = reduces bias
+#
+#   3. HALLUCINATION CHECK  → Two models for cross-validation:
+#      v1: llama-3.1-8b-instant (fast first-pass)
+#      v2: gemma2-9b-it (Google architecture, different reasoning path)
+#
+#   4. MASTER SYNTHESIZER   → mixtral-8x7b-32768 (Groq)
+#      Mixture-of-Experts architecture — diverse internal reasoning
+#
+#   5. CRITIC               → gemma2-9b-it (Groq / Google)
+#      Different architecture from all synthesis models = unbiased review
+#
+#   6. CONTRACT ANALYSIS    → Gemini 2.5 Flash (Google AI)
+#      1M token context — only model that can ingest full contracts
 
-# Fallback/General Model
+# Stage 1: Extraction / Routing (fast, low-token)
+LLM_ROUTER   = "llama-3.1-8b-instant"
+LLM_ANALYZER = "llama-3.1-8b-instant"    # used as extractor in each agent
+
+# Stage 2: Specialist synthesis (deeper, larger model)
+LLM_SYNTHESIZER = "llama-3.3-70b-versatile"
+
+# Stage 3: Hallucination verifier (cross-model validation)
+LLM_VERIFIER_V1 = "llama-3.1-8b-instant"   # fast first-pass
+LLM_VERIFIER_V2 = "gemma2-9b-it"            # Google family, independent check
+
+# Stage 4: Master synthesizer (MoE architecture)
+LLM_MASTER = "mixtral-8x7b-32768"
+
+# Stage 5: Critic (Google architecture, fresh perspective)
+LLM_CRITIC = "gemma2-9b-it"
+
+# Stage 6: Contract analysis (Google AI, massive context)
 GEMINI_MODEL = "gemini-2.5-flash"
 
 # ==========================================

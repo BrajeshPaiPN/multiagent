@@ -8,7 +8,7 @@ If the draft fails, it triggers a revision loop.
 
 from langchain_groq import ChatGroq
 from pydantic import BaseModel, Field
-from config import LLM_ANALYZER
+from config import LLM_CRITIC
 
 class CriticReview(BaseModel):
     is_approved: bool = Field(description="True if the draft is perfect, False if it needs revision.")
@@ -53,7 +53,7 @@ If it is missing a key strategy, has poor structure, or fails to answer the quer
 """
 
     try:
-        llm = ChatGroq(model=LLM_ANALYZER, temperature=0)
+        llm = ChatGroq(model=LLM_CRITIC, temperature=0)  # gemma2-9b — different architecture = unbiased review
         structured_llm = llm.with_structured_output(CriticReview)
         review = structured_llm.invoke(prompt)
         

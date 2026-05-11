@@ -6,7 +6,7 @@ Also acts as the reviser if the Critic Agent rejects the draft.
 """
 
 from langchain_groq import ChatGroq
-from config import LLM_SYNTHESIZER, GROQ_API_KEY
+from config import LLM_MASTER, GROQ_API_KEY
 
 def node_master_synthesizer(state: dict) -> dict:
     print("\n" + "=" * 60)
@@ -88,7 +88,7 @@ Combine the expert opinions below into one cohesive, well-structured Legal Memor
         }
 
     try:
-        llm = ChatGroq(model=LLM_SYNTHESIZER, temperature=0.2)
+        llm = ChatGroq(model=LLM_MASTER, temperature=0.2)  # Mixtral MoE — diverse internal reasoning
         response = llm.invoke(prompt)
         final_text = response.content
         print("    [+] Master Draft complete.")
