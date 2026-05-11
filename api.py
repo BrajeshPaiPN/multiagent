@@ -83,6 +83,86 @@ async def analyze_query(request: QueryRequest):
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/api/analyze-with-doc")
+async def analyze_with_document(
+    query: str = Form(...),
+    mode: str = Form("citizen"),
+    file: UploadFile = File(...)
+):
+    """Legal analysis with an attached document (traffic ticket, FIR, court order, etc.)."""
+    if not query.strip():
+        raise HTTPException(status_code=400, detail="Query cannot be empty.")
+
+    try:
+        # Extract text from uploaded document
+        os.makedirs("rag/uploads", exist_ok=True)
+        ext = file.filename.split(".")[-1].lower()
+        temp_id = str(uuid.uuid4())
+        temp_path = f"rag/uploads/temp_{temp_id}.{ext}"
+
+        with open(temp_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+
+        extracted_text = ""
+        if ext == "pdf":
+            extracted_text = extract_text_from_pdf(temp_path)
+        elif ext in ["png", "jpg", "jpeg"]:
+            img = Image.open(temp_path)
+            extracted_text = pytesseract.image_to_string(img)
+        elif ext == "txt":
+            with open(temp_path, "r", encoding="utf-8", errors="ignore") as f:
+                extracted_text = f.read()
+        else:
+            os.remove(temp_path)
+            raise HTTPException(status_code=400, detail="Supported formats: PDF, PNG, JPG, JPEG, TXT.")
+
+        os.remove(temp_path)
+
+        if not extracted_text.strip():
+            raise HTTPException(status_code=400, detail="Could not extract readable text from the document.")
+
+        # Combine document text with user query for richer context
+        enriched_query = (
+            f"{query}\n\n"
+            f"--- ATTACHED DOCUMENT (extracted text) ---\n"
+            f"{extracted_text[:8000]}\n"
+            f"--- END OF DOCUMENT ---"
+        )
+
+        initial_state = create_initial_state(enriched_query, mode)
+        final_state = agent_swarm.invoke(initial_state)
+
+        verified_cases, cautioned_cases, rejected_cases = [], [], []
+        for ed in final_state.get("expert_drafts", []):
+            verified_cases.extend(ed.get("verified_cases", []))
+            cautioned_cases.extend(ed.get("cautioned_cases", []))
+            rejected_cases.extend(ed.get("rejected_cases", []))
+
+        return {
+            "query": query,
+            "document_attached": True,
+            "document_chars": len(extracted_text),
+            "routed_domains": final_state.get("routed_domains", []),
+            "final_draft": final_state.get("final_draft", "No output generated."),
+            "revisions_made": final_state.get("revision_count", 0),
+            "pipeline_summary": {
+                "verified_cases": len(verified_cases),
+                "cautioned_cases": len(cautioned_cases),
+                "rejected_cases": len(rejected_cases),
+            },
+            "cases_data": {
+                "verified": verified_cases,
+                "cautioned": cautioned_cases,
+                "rejected": rejected_cases
+            }
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.post("/api/analyze-contract")
 async def analyze_contract(file: UploadFile = File(...), mode: str = Form("citizen")):
     """Upload a PDF or Image of a contract to find risks and pitfalls."""

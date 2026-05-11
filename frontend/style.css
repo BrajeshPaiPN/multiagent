@@ -228,6 +228,10 @@ body {
   background: var(--blue-dim); color: var(--blue);
   border: 1px solid rgba(59,130,246,0.3);
 }
+.tag-doc {
+  background: rgba(16, 185, 129, 0.1); color: var(--green);
+  border-color: rgba(16, 185, 129, 0.3); text-transform: none;
+}
 
 .stats-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; }
 .stat-chip {
@@ -505,6 +509,34 @@ body {
   background: rgba(255,255,255,0.07); color: var(--text-2);
   border: 1px solid var(--border);
 }
+
+/* ── Document Attachment Row ── */
+.doc-attach-row {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 10px 16px; border-top: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.015);
+}
+.attach-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.82rem; font-weight: 600; color: var(--blue);
+  cursor: pointer; padding: 6px 14px; border-radius: 8px;
+  background: var(--blue-dim); transition: all 0.2s;
+  border: 1px solid transparent;
+}
+.attach-btn:hover { background: rgba(59, 130, 246, 0.2); border-color: var(--blue); }
+.attach-hint { font-size: 0.72rem; color: var(--text-3); }
+.attached-doc-indicator {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 5px 12px; border-radius: 8px;
+  background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3);
+  color: var(--green); font-size: 0.82rem; font-weight: 500;
+}
+.attached-doc-indicator i { color: var(--green); }
+.remove-doc-btn {
+  background: transparent; border: none; color: var(--text-3);
+  cursor: pointer; font-size: 0.9rem; padding: 2px 4px; transition: color 0.2s;
+}
+.remove-doc-btn:hover { color: var(--red); }
 
 /* ── Interactive Stat Chips ── */
 .interactive-chip { cursor: pointer; transition: all 0.2s; }

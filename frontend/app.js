@@ -77,6 +77,23 @@ function stopAgentAnimation() {
     });
 }
 
+// ── Document Attachment Helpers ─────────────────────────────
+let _queryAttachedFile = null;
+
+function handleQueryDocAttach(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    _queryAttachedFile = file;
+    document.getElementById('query-doc-name').textContent = file.name;
+    document.getElementById('query-doc-indicator').classList.remove('hidden');
+}
+
+function removeQueryDoc() {
+    _queryAttachedFile = null;
+    document.getElementById('query-doc-input').value = '';
+    document.getElementById('query-doc-indicator').classList.add('hidden');
+}
+
 // ── TAB 1: Legal Engine ─────────────────────────────────────
 async function submitQuery() {
     const query = document.getElementById('legal-query').value.trim();
@@ -88,12 +105,32 @@ async function submitQuery() {
     startAgentAnimation();
 
     try {
-        const res = await fetch('/api/analyze', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ query, mode: getMode() })
-        });
-        if (!res.ok) throw new Error(`Server returned ${res.status}`);
+        let res;
+
+        if (_queryAttachedFile) {
+            // Use multipart FormData endpoint when a document is attached
+            const formData = new FormData();
+            formData.append('query', query);
+            formData.append('mode', getMode());
+            formData.append('file', _queryAttachedFile);
+
+            res = await fetch('/api/analyze-with-doc', {
+                method: 'POST',
+                body: formData
+            });
+        } else {
+            // Standard JSON endpoint for text-only queries
+            res = await fetch('/api/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query, mode: getMode() })
+            });
+        }
+
+        if (!res.ok) {
+            const errData = await res.json().catch(() => ({}));
+            throw new Error(errData.detail || `Server returned ${res.status}`);
+        }
         const data = await res.json();
 
         const tagsEl = document.getElementById('routed-domains');
@@ -105,13 +142,20 @@ async function submitQuery() {
             tagsEl.appendChild(tag);
         });
 
+        // If document was attached, show a badge
+        if (data.document_attached) {
+            const docTag = document.createElement('span');
+            docTag.className = 'tag tag-doc';
+            docTag.innerHTML = '<i class="fa-solid fa-paperclip"></i> Document Analyzed';
+            tagsEl.appendChild(docTag);
+        }
+
         document.getElementById('stat-verified').textContent = data.pipeline_summary?.verified_cases ?? 0;
         document.getElementById('stat-cautioned').textContent = data.pipeline_summary?.cautioned_cases ?? 0;
         document.getElementById('stat-rejected').textContent = data.pipeline_summary?.rejected_cases ?? 0;
         document.getElementById('stat-revisions').textContent = data.revisions_made ?? 0;
 
         window._currentCasesData = data.cases_data || {};
-        document.getElementById('stat-revisions').textContent = data.revisions_made ?? 0;
 
         document.getElementById('final-draft').innerHTML = marked.parse(data.final_draft || '');
 
@@ -119,6 +163,9 @@ async function submitQuery() {
         document.getElementById('query-loading').classList.add('hidden');
         document.getElementById('query-result').classList.remove('hidden');
         document.getElementById('query-result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        // Clear attached file after successful analysis
+        removeQueryDoc();
 
     } catch (err) {
         stopAgentAnimation();

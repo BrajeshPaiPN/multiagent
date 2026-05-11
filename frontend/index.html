@@ -93,6 +93,23 @@
                     rows="4"
                     onkeydown="if(event.key==='Enter' && event.ctrlKey) submitQuery()"
                 ></textarea>
+
+                <!-- Document Attachment -->
+                <div class="doc-attach-row">
+                    <label class="attach-btn" for="query-doc-input" title="Attach a document (traffic ticket, FIR, court order, etc.)">
+                        <i class="fa-solid fa-paperclip"></i> Attach Document
+                    </label>
+                    <input type="file" id="query-doc-input" accept=".pdf,.jpg,.jpeg,.png,.txt" style="display:none" onchange="handleQueryDocAttach(event)" />
+                    <div class="attached-doc-indicator hidden" id="query-doc-indicator">
+                        <i class="fa-solid fa-file-lines"></i>
+                        <span id="query-doc-name">No file</span>
+                        <button class="remove-doc-btn" onclick="removeQueryDoc()" title="Remove document">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <span class="attach-hint">PDF, JPG, PNG, TXT · Traffic tickets, FIRs, court orders, notices</span>
+                </div>
+
                 <div class="input-card-footer">
                     <span class="input-hint"><i class="fa-regular fa-keyboard"></i> Ctrl + Enter to submit</span>
                     <button class="cta-btn" id="submit-query-btn" onclick="submitQuery()">
