@@ -57,81 +57,125 @@
     <!-- ── MAIN CONTENT ─────────────────────────────────────── -->
     <main class="main-content">
 
-        <!-- ── TAB 1: LEGAL ENGINE (CHAT INTERFACE) ──────────────────────────── -->
-        <section id="section-query" class="tab-section active chat-layout">
+        <!-- ── TAB 1: LEGAL ENGINE ──────────────────────────── -->
+        <section id="section-query" class="tab-section active">
 
-            <!-- Chat Sidebar (History) -->
-            <div class="chat-sidebar">
-                <button class="new-chat-btn" onclick="startNewChat()">
-                    <i class="fa-solid fa-plus"></i> New Legal Case
-                </button>
-                <div class="chat-history-list" id="chat-history-list">
-                    <!-- Sessions injected here -->
+            <!-- Hero -->
+            <div class="hero-block">
+                <div class="hero-img-wrap">
+                    <img src="/static/hero_scales.png" alt="Nyaya AI Legal Intelligence" class="hero-img" />
+                    <div class="hero-img-glow"></div>
+                </div>
+                <div class="hero-text">
+                    <p class="hero-eyebrow"><i class="fa-solid fa-circle-dot pulse-dot"></i> Multi-Agent Intelligence System</p>
+                    <h1 class="hero-title">India's Most Advanced<br /><span class="gradient-text">Legal AI Engine</span></h1>
+                    <p class="hero-sub">7 specialized AI agents. Constitutional RAG retrieval. Real-time case validation. Get a full legal memorandum in under 60 seconds.</p>
+                    <div class="hero-stats">
+                        <div class="hstat"><span>7</span> AI Agents</div>
+                        <div class="hstat-div"></div>
+                        <div class="hstat"><span>5</span> Legal Domains</div>
+                        <div class="hstat-div"></div>
+                        <div class="hstat"><span>∞</span> Queries</div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Main Chat Area -->
-            <div class="chat-main">
-                
-                <div class="chat-messages" id="chat-messages">
-                    <!-- Welcome Screen (shown when no messages) -->
-                    <div class="chat-welcome" id="chat-welcome">
-                        <img src="/static/hero_scales.png" class="hero-img-small" />
-                        <h2>Nyaya AI Legal Engine</h2>
-                        <p>India's Most Advanced Legal AI</p>
-                        <div class="chat-welcome-hints">
-                            <span><i class="fa-solid fa-scale-balanced"></i> 7 AI Agents</span>
-                            <span><i class="fa-solid fa-book"></i> BNS/BNSS Ready</span>
-                        </div>
-                    </div>
-                    <!-- Messages go here -->
+            <!-- Query Input Card -->
+            <div class="input-card" id="query-input-card">
+                <div class="input-card-label">
+                    <i class="fa-solid fa-magnifying-glass-chart"></i>
+                    Describe your legal situation
                 </div>
+                <textarea
+                    id="legal-query"
+                    class="legal-textarea"
+                    placeholder="E.g. My landlord is refusing to return my security deposit of ₹80,000 after I vacated the flat in Mumbai. What legal action can I take?"
+                    rows="4"
+                    onkeydown="if(event.key==='Enter' && event.ctrlKey) submitQuery()"
+                ></textarea>
 
-                <!-- Chat Input Area -->
-                <div class="chat-input-container">
-                    <div class="chat-input-wrapper">
-                        <textarea
-                            id="legal-query"
-                            class="chat-textarea"
-                            placeholder="Message Nyaya AI... (e.g. My landlord refuses to return my deposit...)"
-                            rows="1"
-                            oninput="autoResizeTextarea(this)"
-                            onkeydown="if(event.key==='Enter' && !event.shiftKey) { event.preventDefault(); submitQuery(); }"
-                        ></textarea>
-                        
-                        <div class="chat-input-actions">
-                            <label class="chat-attach-btn" for="query-doc-input" title="Attach Document (FIR, Notice, etc.)">
-                                <i class="fa-solid fa-paperclip"></i>
-                            </label>
-                            <input type="file" id="query-doc-input" accept=".pdf,.jpg,.jpeg,.png,.txt" style="display:none" onchange="handleQueryDocAttach(event)" />
-                            
-                            <button class="chat-send-btn" id="submit-query-btn" onclick="submitQuery()">
-                                <i class="fa-solid fa-paper-plane"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
+                <!-- Document Attachment -->
+                <div class="doc-attach-row">
+                    <label class="attach-btn" for="query-doc-input" title="Attach a document (traffic ticket, FIR, court order, etc.)">
+                        <i class="fa-solid fa-paperclip"></i> Attach Document
+                    </label>
+                    <input type="file" id="query-doc-input" accept=".pdf,.jpg,.jpeg,.png,.txt" style="display:none" onchange="handleQueryDocAttach(event)" />
                     <div class="attached-doc-indicator hidden" id="query-doc-indicator">
-                        <i class="fa-solid fa-file-lines"></i> <span id="query-doc-name">No file</span>
-                        <button class="remove-doc-btn" onclick="removeQueryDoc()"><i class="fa-solid fa-xmark"></i></button>
+                        <i class="fa-solid fa-file-lines"></i>
+                        <span id="query-doc-name">No file</span>
+                        <button class="remove-doc-btn" onclick="removeQueryDoc()" title="Remove document">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
                     </div>
-                    <div class="chat-footer-hint">AI agents may produce inaccurate information. Always verify critical legal matters.</div>
+                    <span class="attach-hint">PDF, JPG, PNG, TXT · Traffic tickets, FIRs, court orders, notices</span>
                 </div>
 
-                <!-- Loading Overlay -->
-                <div id="query-loading" class="chat-loading-overlay hidden">
-                    <div class="loading-visual">
-                        <div class="loading-ring"></div>
-                        <div class="loading-ring ring-2"></div>
-                        <i class="fa-solid fa-scale-balanced loading-icon"></i>
-                    </div>
-                    <p class="loading-title">Agents Working...</p>
-                    <div class="agent-pipeline" style="margin-top: 15px;">
-                        <div class="agent-step"><div class="step-dot active-step"></div><span>Analyzing</span></div>
-                    </div>
+                <div class="input-card-footer">
+                    <span class="input-hint"><i class="fa-regular fa-keyboard"></i> Ctrl + Enter to submit</span>
+                    <button class="cta-btn" id="submit-query-btn" onclick="submitQuery()">
+                        <span class="btn-text"><i class="fa-solid fa-bolt"></i> Analyze with AI</span>
+                        <div class="btn-shine"></div>
+                    </button>
                 </div>
-
             </div>
+
+            <!-- Loading State -->
+            <div id="query-loading" class="loading-card hidden">
+                <div class="loading-visual">
+                    <div class="loading-ring"></div>
+                    <div class="loading-ring ring-2"></div>
+                    <i class="fa-solid fa-scale-balanced loading-icon"></i>
+                </div>
+                <p class="loading-title">Agents Working...</p>
+                <div class="agent-pipeline">
+                    <div class="agent-step" id="step-rag">
+                        <div class="step-dot active-step"></div>
+                        <span>RAG Retrieval</span>
+                    </div>
+                    <div class="step-connector"></div>
+                    <div class="agent-step" id="step-router">
+                        <div class="step-dot"></div>
+                        <span>Domain Routing</span>
+                    </div>
+                    <div class="step-connector"></div>
+                    <div class="agent-step" id="step-expert">
+                        <div class="step-dot"></div>
+                        <span>Expert Analysis</span>
+                    </div>
+                    <div class="step-connector"></div>
+                    <div class="agent-step" id="step-synth">
+                        <div class="step-dot"></div>
+                        <span>Synthesis</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Result -->
+            <div id="query-result" class="result-section hidden">
+                <div class="result-header">
+                    <div class="result-header-left">
+                        <i class="fa-solid fa-check-circle result-icon-success"></i>
+                        <div>
+                            <h2 class="result-title">Legal Memorandum</h2>
+                            <p class="result-sub">Generated by multi-agent pipeline</p>
+                        </div>
+                    </div>
+                    <div class="result-tags" id="routed-domains"></div>
+                </div>
+
+                <div class="stats-row">
+                    <div class="stat-chip interactive-chip" onclick="showCasesModal('verified')"><i class="fa-solid fa-circle-check text-green"></i> <span id="stat-verified">0</span> Cases Verified</div>
+                    <div class="stat-chip interactive-chip" onclick="showCasesModal('cautioned')"><i class="fa-solid fa-triangle-exclamation text-amber"></i> <span id="stat-cautioned">0</span> Cautioned</div>
+                    <div class="stat-chip interactive-chip" onclick="showCasesModal('rejected')"><i class="fa-solid fa-circle-xmark text-red"></i> <span id="stat-rejected">0</span> Rejected</div>
+                    <div class="stat-chip"><i class="fa-solid fa-rotate text-blue"></i> <span id="stat-revisions">0</span> Revisions</div>
+                </div>
+
+                <div class="memorandum-card">
+                    <div class="memo-watermark"><i class="fa-solid fa-scale-balanced"></i></div>
+                    <div class="memo-content" id="final-draft"></div>
+                </div>
+            </div>
+
         </section>
 
         <!-- ── TAB 2: CONTRACT ANALYZER ─────────────────────── -->
