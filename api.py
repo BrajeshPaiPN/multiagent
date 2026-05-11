@@ -71,6 +71,11 @@ async def analyze_query(request: QueryRequest):
                 "verified_cases": len(verified_cases),
                 "cautioned_cases": len(cautioned_cases),
                 "rejected_cases": len(rejected_cases),
+            },
+            "cases_data": {
+                "verified": verified_cases,
+                "cautioned": cautioned_cases,
+                "rejected": rejected_cases
             }
         }
     except Exception as e:

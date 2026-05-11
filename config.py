@@ -58,8 +58,8 @@ if GROQ_API_KEY:
 #      v1: llama-3.1-8b-instant (fast first-pass)
 #      v2: gemma2-9b-it (Google architecture, different reasoning path)
 #
-#   4. MASTER SYNTHESIZER   → mixtral-8x7b-32768 (Groq)
-#      Mixture-of-Experts architecture — diverse internal reasoning
+#   4. MASTER SYNTHESIZER   → llama-3.3-70b-versatile (Groq)
+#      Deep reasoning to synthesize multiple expert drafts into one cohesive memo
 #
 #   5. CRITIC               → gemma2-9b-it (Groq / Google)
 #      Different architecture from all synthesis models = unbiased review
@@ -78,8 +78,8 @@ LLM_SYNTHESIZER = "llama-3.3-70b-versatile"
 LLM_VERIFIER_V1 = "llama-3.1-8b-instant"   # fast first-pass
 LLM_VERIFIER_V2 = "gemma2-9b-it"            # Google family, independent check
 
-# Stage 4: Master synthesizer (MoE architecture)
-LLM_MASTER = "mixtral-8x7b-32768"
+# Stage 4: Master synthesizer (deep reasoning)
+LLM_MASTER = "llama-3.3-70b-versatile"
 
 # Stage 5: Critic (Google architecture, fresh perspective)
 LLM_CRITIC = "gemma2-9b-it"

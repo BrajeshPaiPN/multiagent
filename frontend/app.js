@@ -110,6 +110,9 @@ async function submitQuery() {
         document.getElementById('stat-rejected').textContent = data.pipeline_summary?.rejected_cases ?? 0;
         document.getElementById('stat-revisions').textContent = data.revisions_made ?? 0;
 
+        window._currentCasesData = data.cases_data || {};
+        document.getElementById('stat-revisions').textContent = data.revisions_made ?? 0;
+
         document.getElementById('final-draft').innerHTML = marked.parse(data.final_draft || '');
 
         stopAgentAnimation();
@@ -124,6 +127,53 @@ async function submitQuery() {
     } finally {
         setLoadingLock(false);
     }
+}
+
+function showCasesModal(type) {
+    if (!window._currentCasesData) return;
+    const cases = window._currentCasesData[type] || [];
+    
+    let title = 'Cases';
+    if (type === 'verified') title = 'Verified Cases (Safe to Cite)';
+    if (type === 'cautioned') title = 'Cautioned Cases (Dissenting Opinions)';
+    if (type === 'rejected') title = 'Rejected Cases (Overruled / Bad Law)';
+    
+    document.getElementById('modal-title').textContent = title;
+    const listEl = document.getElementById('modal-cases-list');
+    listEl.innerHTML = '';
+    
+    if (cases.length === 0) {
+        listEl.innerHTML = '<p style="color: var(--text-2);">No cases found in this category.</p>';
+    } else {
+        cases.forEach(c => {
+            const card = document.createElement('div');
+            card.className = 'case-card';
+            
+            const linkHtml = c.url ? `<a href="${c.url}" target="_blank" class="case-link-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> Read Full Judgment</a>` :
+                             `<a href="https://indiankanoon.org/search/?formInput=${encodeURIComponent(c.name || c.case_name)}" target="_blank" class="case-link-btn"><i class="fa-solid fa-magnifying-glass"></i> Search on Indian Kanoon</a>`;
+            
+            card.innerHTML = `
+                <div class="case-card-header">
+                    <div>
+                        <div class="case-card-title">${c.name || c.case_name || 'Unknown Case'}</div>
+                        <div class="case-card-meta">${c.court || 'Court'} · ${c.year || 'Year'} · Hierarchy Score: ${c.hierarchy_score || 'N/A'}</div>
+                    </div>
+                </div>
+                <div class="case-card-summary">
+                    <strong>Verdict/Holding:</strong> ${c.verdict || c.summary || 'No summary available.'}<br/>
+                    <strong>Issue:</strong> ${c.legal_issue || 'N/A'}
+                </div>
+                ${linkHtml}
+            `;
+            listEl.appendChild(card);
+        });
+    }
+    
+    document.getElementById('cases-modal').classList.remove('hidden');
+}
+
+function closeCasesModal() {
+    document.getElementById('cases-modal').classList.add('hidden');
 }
 
 // ── TAB 2: Contract Analyzer ───────────────────────────────

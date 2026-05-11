@@ -506,6 +506,54 @@ body {
   border: 1px solid var(--border);
 }
 
+/* ── Interactive Stat Chips ── */
+.interactive-chip { cursor: pointer; transition: all 0.2s; }
+.interactive-chip:hover { transform: translateY(-2px); background: rgba(255,255,255,0.08); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+
+/* ── Modal ── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.modal-content {
+  background: var(--surface); border: 1px solid var(--border-bright);
+  border-radius: var(--radius); width: 100%; max-width: 800px;
+  max-height: 85vh; display: flex; flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+.modal-header {
+  padding: 20px 24px; border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.modal-header h3 { font-size: 1.2rem; color: var(--text-1); display: flex; align-items: center; gap: 8px; }
+.modal-close {
+  background: transparent; border: none; color: var(--text-2);
+  font-size: 1.2rem; cursor: pointer; transition: color 0.2s;
+}
+.modal-close:hover { color: var(--text-1); }
+.modal-body {
+  padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px;
+}
+.case-card {
+  background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 16px 20px;
+}
+.case-card-header {
+  display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;
+}
+.case-card-title { font-size: 1rem; font-weight: 600; color: var(--text-1); margin-bottom: 4px; }
+.case-card-meta { font-size: 0.8rem; color: var(--text-3); }
+.case-card-summary { font-size: 0.88rem; color: var(--text-2); line-height: 1.6; margin-bottom: 12px; }
+.case-link-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.8rem; font-weight: 600; color: var(--blue);
+  text-decoration: none; padding: 6px 12px; border-radius: 6px;
+  background: var(--blue-dim); transition: background 0.2s;
+}
+.case-link-btn:hover { background: rgba(59, 130, 246, 0.25); }
+
 /* ── Footer ── */
 .site-footer {
   position: relative; z-index: 1; text-align: center;
