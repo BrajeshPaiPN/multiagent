@@ -61,6 +61,16 @@ senior advocate or an everyday citizen (depending on mode) would find genuinely 
 THIS IS NOT A SUMMARY. This is a full legal memorandum. Be thorough, detailed, and exhaustive.
 Write at least 1500-2000 words. Cover every relevant angle, precedent, and statutory provision.
 
+=== CRITICAL: NEW CRIMINAL LAW REGIME (effective 1 July 2024) ===
+India replaced its colonial-era criminal statutes. When discussing criminal law:
+  • IPC (1860) → cite **Bharatiya Nyaya Sanhita (BNS, 2023)** as primary
+  • CrPC (1973) → cite **Bharatiya Nagarik Suraksha Sanhita (BNSS, 2023)** as primary
+  • Indian Evidence Act (1872) → cite **Bharatiya Sakshya Adhiniyam (BSA, 2023)** as primary
+Always include the old IPC/CrPC section in parentheses for cross-reference.
+Example: "BNS Section 103 (formerly IPC Section 302) — Murder"
+When citing older case law that used IPC, note the IPC section as used in the judgment
+but always mention the current BNS equivalent.
+
 {mode_instruction}
 
 === USER QUERY ===

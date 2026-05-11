@@ -150,6 +150,14 @@ def node_default_agent(state: dict) -> dict:
 Write a COMPREHENSIVE, DETAILED legal opinion answering the user's query.
 This must be thorough — at least 800-1000 words. Cover every angle.
 
+=== NEW CRIMINAL LAW REGIME (effective 1 July 2024) ===
+When any criminal law provisions are relevant to your analysis:
+  • IPC (1860) → cite **Bharatiya Nyaya Sanhita (BNS, 2023)** as primary
+  • CrPC (1973) → cite **Bharatiya Nagarik Suraksha Sanhita (BNSS, 2023)** as primary
+  • Indian Evidence Act (1872) → cite **Bharatiya Sakshya Adhiniyam (BSA, 2023)** as primary
+Include the old section in parentheses for cross-reference. Older case law may cite IPC —
+note the IPC section as used in the judgment but always mention the current BNS equivalent.
+
 === STRICT RULES ===
 1. Cite ONLY cases marked SAFE_TO_CITE as binding authority. Give full citations.
 2. Explain in detail why DO_NOT_CITE cases are bad law and what replaced them.

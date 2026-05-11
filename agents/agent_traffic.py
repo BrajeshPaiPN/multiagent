@@ -163,6 +163,11 @@ def node_traffic_agent(state: dict) -> dict:
 Write a COMPREHENSIVE, DETAILED legal opinion answering the user's query.
 This must be thorough — at least 800-1000 words. Cover every angle.
 
+NOTE: When criminal charges arise from traffic incidents (rash driving, hit-and-run,
+causing death by negligence), cite **BNS (Bharatiya Nyaya Sanhita, 2023)** sections
+as primary law (not IPC). Include old IPC section in parentheses for reference.
+E.g.: "BNS Section 106 (formerly IPC Section 304A) — Death by Negligence"
+
 === DOMAIN FOCUS ===
 Focus on: Motor Vehicles Act 1988 (as amended 2019), traffic violations and
 penalties, e-challan procedures, compounding of offences,

@@ -169,10 +169,24 @@ def node_criminal_agent(state: dict) -> dict:
 Write a COMPREHENSIVE, DETAILED legal opinion answering the user's query.
 This must be thorough — at least 800-1000 words. Cover every angle.
 
+=== CRITICAL: NEW CRIMINAL LAW REGIME (effective 1 July 2024) ===
+India has replaced its colonial-era criminal statutes:
+  • Indian Penal Code (IPC, 1860) → replaced by **Bharatiya Nyaya Sanhita (BNS, 2023)**
+  • Code of Criminal Procedure (CrPC, 1973) → replaced by **Bharatiya Nagarik Suraksha Sanhita (BNSS, 2023)**
+  • Indian Evidence Act (1872) → replaced by **Bharatiya Sakshya Adhiniyam (BSA, 2023)**
+
+YOU MUST:
+  1. Cite BNS/BNSS/BSA sections as the PRIMARY current law in all analysis.
+  2. Include the corresponding old IPC/CrPC/Evidence Act section in parentheses
+     for cross-reference, e.g.: "BNS Section 103 (formerly IPC Section 302) — Murder"
+  3. When discussing older landmark cases that used IPC sections, cite the IPC section
+     as used in the judgment BUT note the current BNS equivalent.
+  4. Highlight any substantive differences between old and new provisions where relevant.
+
 === DOMAIN FOCUS ===
 Focus on: mens rea, actus reus, bail conditions (regular / anticipatory / interim),
-relevant IPC/BNS/BNSS/CrPC sections, evidentiary burden, FIR procedures,
-chargesheet timelines, sentencing guidelines, and parole eligibility.
+BNS/BNSS sections (and their IPC/CrPC equivalents), evidentiary burden under BSA,
+FIR procedures under BNSS, chargesheet timelines, sentencing guidelines, and parole.
 
 === STRICT RULES ===
 1. Cite ONLY cases marked SAFE_TO_CITE as binding authority. Give full citations.
@@ -181,8 +195,8 @@ chargesheet timelines, sentencing guidelines, and parole eligibility.
 4. Include Hierarchy Score (H) when citing cases.
 5. Provide specific, actionable criminal-defence / prosecution strategy with step-by-step guidance.
 6. If the query relates to a famous ongoing/pending criminal case or a constitutional
-   challenge in criminal law (e.g., Section 377, marital rape exception, death penalty
-   moratorium, sedition law S.124A repeal), discuss the ONGOING STATUS with arguments
+   challenge in criminal law (e.g., marital rape exception, death penalty
+   moratorium, sedition law repeal under BNS), discuss the ONGOING STATUS with arguments
    from both sides and current procedural position before the court.
 
 === USER QUERY ===
@@ -199,7 +213,7 @@ chargesheet timelines, sentencing guidelines, and parole eligibility.
 
 === OUTPUT FORMAT ===
 1. EXECUTIVE SUMMARY (thorough 4-5 sentences, not a one-liner)
-2. APPLICABLE CRIMINAL PROVISIONS (explain each section's relevance)
+2. APPLICABLE CRIMINAL PROVISIONS — cite BNS/BNSS/BSA as primary, IPC/CrPC in parentheses
 3. DETAILED CASE ANALYSIS (for each case: facts, ratio, how it applies here)
 4. REJECTED PRECEDENTS (why they were overruled and what replaced them)
 5. CRIMINAL DEFENCE / PROSECUTION STRATEGY (specific, step-by-step)
