@@ -6,10 +6,10 @@ Identifies pitfalls, hidden risks, one-sided clauses, and provides
 an overall recommendation on whether it is safe to sign.
 """
 
-from langchain_groq import ChatGroq
+from langchain_google_genai import ChatGoogleGenerativeAI
 from pydantic import BaseModel, Field
 from typing import List
-from config import LLM_ANALYZER
+from config import GEMINI_MODEL
 
 class ClauseAnalysis(BaseModel):
     clause_snippet: str = Field(description="A short quote or summary of the clause in question.")
@@ -58,8 +58,8 @@ Provide a highly structured and professional review. Be ruthless in finding risk
 """
 
     try:
-        # We use a larger context window or standard model
-        llm = ChatGroq(model=LLM_ANALYZER, temperature=0.1)
+        # We use Gemini due to Groq's 6000 TPM limit for free tiers being too small for full contracts
+        llm = ChatGoogleGenerativeAI(model=GEMINI_MODEL, temperature=0.1)
         structured_llm = llm.with_structured_output(ContractReview)
         
         review = structured_llm.invoke(prompt)

@@ -22,6 +22,11 @@ import sys
 sys.stdout.reconfigure(encoding='utf-8')
 sys.stderr.reconfigure(encoding='utf-8')
 
+# Suppress LangChain / LangGraph warnings for cleaner logs
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+warnings.filterwarnings("ignore", message=".*allowed_objects.*")
+
 # Import our LangGraph app
 from orchestrator import build_legal_graph, create_initial_state
 

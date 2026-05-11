@@ -231,8 +231,8 @@ def main():
 
                 time.sleep(0.5)   # Be polite to Indian Kanoon servers
 
-            if total >= 10000:
-                print("\n[+] Target of 10,000 cases reached. Stopping.")
+            if total >= 5000:
+                print("\n[+] Target of 5,000 cases reached. Stopping.")
                 break
 
     count = 0
