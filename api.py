@@ -32,6 +32,11 @@ from orchestrator import build_legal_graph, create_initial_state
 
 app = FastAPI(title="AKGP Legal Intelligence Engine")
 
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for Railway to verify the app is ready."""
+    return {"status": "ok"}
+
 # Pre-compile the graph for speed
 agent_swarm = build_legal_graph()
 
