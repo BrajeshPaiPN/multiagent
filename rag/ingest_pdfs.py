@@ -10,7 +10,7 @@ import shutil
 from PyPDF2 import PdfReader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_core.documents import Document
 
 # OCR fallback libraries
@@ -109,8 +109,8 @@ def run_ingestion():
 
     print(f"[*] Generating embeddings and building FAISS index for {len(all_docs)} chunks...", flush=True)
     
-    # Use a lightweight local embedding model (no API calls required)
-    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    # Use Google embeddings to save local RAM on cloud deployments
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
     
     vectorstore = FAISS.from_documents(all_docs, embeddings)
     

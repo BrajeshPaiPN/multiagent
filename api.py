@@ -211,5 +211,6 @@ async def root():
 
 if __name__ == "__main__":
     import uvicorn
-    # Run the server on port 8000
-    uvicorn.run("api:app", host="127.0.0.1", port=8000, reload=True)
+    # Use the PORT environment variable for cloud deployment, fallback to 8000
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("api:app", host="0.0.0.0", port=port, reload=False)

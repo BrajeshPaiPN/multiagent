@@ -7,7 +7,7 @@ uploaded textbooks and statutes.
 """
 import os
 from langchain_community.vectorstores import FAISS
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
 INDEX_PATH = os.path.join(os.path.dirname(__file__), "faiss_index")
 
@@ -28,7 +28,7 @@ def _get_vector_store():
             return None
             
         if _EMBEDDINGS is None:
-            _EMBEDDINGS = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+            _EMBEDDINGS = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
             
         _VECTOR_STORE = FAISS.load_local(
             INDEX_PATH, 
