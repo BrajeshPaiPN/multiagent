@@ -94,36 +94,134 @@ function removeQueryDoc() {
     document.getElementById('query-doc-indicator').classList.add('hidden');
 }
 
+// ── TAB 1: Chat Session Management ────────────────────────────
+let _currentSessionId = null;
+let _chatHistory = [];
+
+function generateId() { return Math.random().toString(36).substr(2, 9); }
+
+function loadChatSessions() {
+    const sessions = JSON.parse(localStorage.getItem('nyaya_sessions') || '[]');
+    const listEl = document.getElementById('chat-history-list');
+    listEl.innerHTML = '';
+    
+    sessions.forEach(session => {
+        const item = document.createElement('div');
+        item.className = `chat-session-item ${session.id === _currentSessionId ? 'active' : ''}`;
+        item.textContent = session.title;
+        item.onclick = () => loadChat(session.id);
+        listEl.appendChild(item);
+    });
+}
+
+function saveSession(title) {
+    let sessions = JSON.parse(localStorage.getItem('nyaya_sessions') || '[]');
+    if (!sessions.find(s => s.id === _currentSessionId)) {
+        sessions.unshift({ id: _currentSessionId, title: title || 'New Legal Case' });
+        localStorage.setItem('nyaya_sessions', JSON.stringify(sessions));
+        loadChatSessions();
+    }
+}
+
+function startNewChat() {
+    _currentSessionId = generateId();
+    _chatHistory = [];
+    document.getElementById('chat-welcome').classList.remove('hidden');
+    document.getElementById('legal-query').value = '';
+    document.querySelectorAll('.message').forEach(e => e.remove());
+    removeQueryDoc();
+    loadChatSessions();
+}
+
+function loadChat(sessionId) {
+    _currentSessionId = sessionId;
+    _chatHistory = JSON.parse(localStorage.getItem(`nyaya_chat_${sessionId}`) || '[]');
+    
+    document.getElementById('chat-welcome').classList.add('hidden');
+    document.querySelectorAll('.message').forEach(e => e.remove());
+    
+    _chatHistory.forEach(msg => appendMessage(msg.role, msg.content, msg.metadata));
+    loadChatSessions();
+}
+
+function appendMessage(role, content, metadata = null) {
+    const chatMessages = document.getElementById('chat-messages');
+    document.getElementById('chat-welcome').classList.add('hidden');
+    
+    const msgDiv = document.createElement('div');
+    msgDiv.className = `message ${role}`;
+    
+    let avatarHTML = role === 'user' 
+        ? `<div class="msg-avatar"><i class="fa-solid fa-user"></i></div>`
+        : `<div class="msg-avatar"><img src="/static/hero_scales.png" /></div>`;
+        
+    let bubbleContent = role === 'ai' ? marked.parse(content) : content.replace(/\n/g, '<br>');
+    
+    // Inject stats if AI message has metadata
+    if (role === 'ai' && metadata) {
+        let tagsHTML = (metadata.routed_domains || []).map(d => `<span class="tag">${d.toUpperCase()}</span>`).join('');
+        if (metadata.document_attached) {
+            tagsHTML += `<span class="tag tag-doc"><i class="fa-solid fa-paperclip"></i> Document Analyzed</span>`;
+        }
+        
+        let statsHTML = `
+            <div class="result-tags" style="margin-bottom:12px">${tagsHTML}</div>
+            <div class="stats-row" style="margin-bottom:16px; font-size:0.8rem">
+                <div class="stat-chip interactive-chip" onclick="showCasesModal('verified', '${metadata.id}')"><i class="fa-solid fa-circle-check text-green"></i> <span>${metadata.verified_cases}</span> Verified</div>
+                <div class="stat-chip interactive-chip" onclick="showCasesModal('cautioned', '${metadata.id}')"><i class="fa-solid fa-triangle-exclamation text-amber"></i> <span>${metadata.cautioned_cases}</span> Cautioned</div>
+                <div class="stat-chip interactive-chip" onclick="showCasesModal('rejected', '${metadata.id}')"><i class="fa-solid fa-circle-xmark text-red"></i> <span>${metadata.rejected_cases}</span> Rejected</div>
+            </div>
+        `;
+        bubbleContent = statsHTML + bubbleContent;
+        
+        // Save case data to window so modal works for history
+        if (!window._chatCases) window._chatCases = {};
+        window._chatCases[metadata.id] = metadata.cases_data;
+    }
+
+    msgDiv.innerHTML = `${avatarHTML}<div class="msg-bubble">${bubbleContent}</div>`;
+    chatMessages.appendChild(msgDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
 // ── TAB 1: Legal Engine ─────────────────────────────────────
 async function submitQuery() {
-    const query = document.getElementById('legal-query').value.trim();
+    const queryEl = document.getElementById('legal-query');
+    const query = queryEl.value.trim();
     if (!query) { alert('Please describe your legal situation.'); return; }
+    
+    if (!_currentSessionId) startNewChat();
+
+    // 1. Show User Message
+    appendMessage('user', query);
+    _chatHistory.push({ role: 'user', content: query });
+    localStorage.setItem(`nyaya_chat_${_currentSessionId}`, JSON.stringify(_chatHistory));
+    
+    if (_chatHistory.length === 1) saveSession(query.substring(0, 30) + '...');
+    
+    queryEl.value = '';
+    queryEl.style.height = 'auto'; // reset resize
 
     setLoadingLock(true);
-    document.getElementById('query-result').classList.add('hidden');
     document.getElementById('query-loading').classList.remove('hidden');
-    startAgentAnimation();
 
     try {
         let res;
+        const historyPayload = JSON.stringify(_chatHistory.slice(0, -1)); // all but the current query
 
         if (_queryAttachedFile) {
-            // Use multipart FormData endpoint when a document is attached
             const formData = new FormData();
             formData.append('query', query);
             formData.append('mode', getMode());
+            formData.append('chat_history', historyPayload);
             formData.append('file', _queryAttachedFile);
 
-            res = await fetch('/api/analyze-with-doc', {
-                method: 'POST',
-                body: formData
-            });
+            res = await fetch('/api/analyze-with-doc', { method: 'POST', body: formData });
         } else {
-            // Standard JSON endpoint for text-only queries
             res = await fetch('/api/analyze', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ query, mode: getMode() })
+                body: JSON.stringify({ query, mode: getMode(), chat_history: JSON.parse(historyPayload) })
             });
         }
 
@@ -132,53 +230,48 @@ async function submitQuery() {
             throw new Error(errData.detail || `Server returned ${res.status}`);
         }
         const data = await res.json();
+        
+        const msgId = generateId();
+        const metadata = {
+            id: msgId,
+            routed_domains: data.routed_domains,
+            document_attached: data.document_attached,
+            verified_cases: data.pipeline_summary?.verified_cases || 0,
+            cautioned_cases: data.pipeline_summary?.cautioned_cases || 0,
+            rejected_cases: data.pipeline_summary?.rejected_cases || 0,
+            cases_data: data.cases_data || {}
+        };
 
-        const tagsEl = document.getElementById('routed-domains');
-        tagsEl.innerHTML = '';
-        (data.routed_domains || []).forEach(d => {
-            const tag = document.createElement('span');
-            tag.className = 'tag';
-            tag.textContent = d.toUpperCase();
-            tagsEl.appendChild(tag);
-        });
+        appendMessage('ai', data.final_draft || "Error: No draft generated.", metadata);
+        _chatHistory.push({ role: 'ai', content: data.final_draft, metadata: metadata });
+        localStorage.setItem(`nyaya_chat_${_currentSessionId}`, JSON.stringify(_chatHistory));
 
-        // If document was attached, show a badge
-        if (data.document_attached) {
-            const docTag = document.createElement('span');
-            docTag.className = 'tag tag-doc';
-            docTag.innerHTML = '<i class="fa-solid fa-paperclip"></i> Document Analyzed';
-            tagsEl.appendChild(docTag);
-        }
-
-        document.getElementById('stat-verified').textContent = data.pipeline_summary?.verified_cases ?? 0;
-        document.getElementById('stat-cautioned').textContent = data.pipeline_summary?.cautioned_cases ?? 0;
-        document.getElementById('stat-rejected').textContent = data.pipeline_summary?.rejected_cases ?? 0;
-        document.getElementById('stat-revisions').textContent = data.revisions_made ?? 0;
-
-        window._currentCasesData = data.cases_data || {};
-
-        document.getElementById('final-draft').innerHTML = marked.parse(data.final_draft || '');
-
-        stopAgentAnimation();
-        document.getElementById('query-loading').classList.add('hidden');
-        document.getElementById('query-result').classList.remove('hidden');
-        document.getElementById('query-result').scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-        // Clear attached file after successful analysis
         removeQueryDoc();
 
     } catch (err) {
-        stopAgentAnimation();
-        document.getElementById('query-loading').classList.add('hidden');
-        alert('Error connecting to AI: ' + err.message);
+        appendMessage('ai', `**System Error:** ${err.message}`);
     } finally {
         setLoadingLock(false);
+        document.getElementById('query-loading').classList.add('hidden');
     }
 }
 
-function showCasesModal(type) {
-    if (!window._currentCasesData) return;
-    const cases = window._currentCasesData[type] || [];
+// Auto-init chat on load
+document.addEventListener('DOMContentLoaded', () => {
+    loadChatSessions();
+    const sessions = JSON.parse(localStorage.getItem('nyaya_sessions') || '[]');
+    if (sessions.length > 0) loadChat(sessions[0].id);
+    else startNewChat();
+});
+
+function showCasesModal(type, msgId) {
+    let casesData = window._currentCasesData;
+    if (msgId && window._chatCases && window._chatCases[msgId]) {
+        casesData = window._chatCases[msgId];
+    }
+    
+    if (!casesData) return;
+    const cases = casesData[type] || [];
     
     let title = 'Cases';
     if (type === 'verified') title = 'Verified Cases (Safe to Cite)';

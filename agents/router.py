@@ -43,6 +43,13 @@ def node_router(state: dict) -> dict:
         llm = ChatGroq(model=LLM_ANALYZER, temperature=0)
         structured_llm = llm.with_structured_output(RoutingDecision)
 
+        chat_history_str = ""
+        if state.get("chat_history"):
+            chat_history_str = "\n=== PREVIOUS CHAT HISTORY (Context for follow-up) ===\n"
+            for msg in state["chat_history"][-4:]:  # last 4 msgs
+                role = "User" if msg.get("role") == "user" else "AI"
+                chat_history_str += f"{role}: {msg.get('content')}\n\n"
+
         prompt = (
             "You are a legal query router for an Indian AI legal platform. "
             "Read the user's legal question and decide which specialist agents "
@@ -61,8 +68,12 @@ def node_router(state: dict) -> dict:
             "violations), return ALL relevant domains (max 3).\n"
             "3. Do NOT add domains that are only tangentially related. Be precise.\n"
             "4. 'general' should be used for constitutional, family, tax, cyber, "
-            "environmental law, or when no specialist fits.\n\n"
-            f"User query: \"{state['user_query']}\"\n\n"
+            "environmental law, or when no specialist fits.\n"
+            "5. If the user query is a follow-up (e.g., 'what if he hit my car'), use the "
+            "Previous Chat History to determine the context and route accordingly.\n"
+            f"{chat_history_str}\n"
+            f"=== CURRENT USER QUERY ===\n"
+            f"\"{state['user_query']}\"\n\n"
             "Return the relevant domain(s) and a brief reasoning."
         )
 

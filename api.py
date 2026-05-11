@@ -38,6 +38,7 @@ agent_swarm = build_legal_graph()
 class QueryRequest(BaseModel):
     query: str
     mode: str = "citizen"
+    chat_history: list = []
 
 @app.post("/api/analyze")
 async def analyze_query(request: QueryRequest):
@@ -47,7 +48,7 @@ async def analyze_query(request: QueryRequest):
     
     try:
         # Initialize the LangGraph state
-        initial_state = create_initial_state(request.query, request.mode)
+        initial_state = create_initial_state(request.query, request.mode, request.chat_history)
         
         # Run the multi-agent pipeline
         # Note: Since this is synchronous, it will block the worker.
@@ -87,6 +88,7 @@ async def analyze_query(request: QueryRequest):
 async def analyze_with_document(
     query: str = Form(...),
     mode: str = Form("citizen"),
+    chat_history: str = Form("[]"),
     file: UploadFile = File(...)
 ):
     """Legal analysis with an attached document (traffic ticket, FIR, court order, etc.)."""
@@ -129,7 +131,13 @@ async def analyze_with_document(
             f"--- END OF DOCUMENT ---"
         )
 
-        initial_state = create_initial_state(enriched_query, mode)
+        import json
+        try:
+            history_list = json.loads(chat_history)
+        except Exception:
+            history_list = []
+
+        initial_state = create_initial_state(enriched_query, mode, history_list)
         final_state = agent_swarm.invoke(initial_state)
 
         verified_cases, cautioned_cases, rejected_cases = [], [], []

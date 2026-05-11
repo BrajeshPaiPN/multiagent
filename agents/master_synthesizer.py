@@ -34,7 +34,14 @@ def node_master_synthesizer(state: dict) -> dict:
         combined_drafts_text += f"\n--- EXPERT DRAFT {idx+1} ({domain}) ---\n{draft}\n"
 
     rag_context = state.get("rag_context", "")
-    mode = state.get("mode", "citizen")
+    chat_history_str = ""
+    if state.get("chat_history"):
+        chat_history_str = "\n=== PREVIOUS CHAT HISTORY (Context for follow-up) ===\n"
+        for msg in state["chat_history"][-4:]:
+            role = "User" if msg.get("role") == "user" else "AI"
+            chat_history_str += f"{role}: {msg.get('content')}\n\n"
+
+    mode = state.get("mode", "citizen").lower()
     print(f"    [+] Combining {len(expert_drafts)} draft(s). Mode: {mode}")
 
     if mode == "citizen":
@@ -72,8 +79,8 @@ When citing older case law that used IPC, note the IPC section as used in the ju
 but always mention the current BNS equivalent.
 
 {mode_instruction}
-
-=== USER QUERY ===
+{chat_history_str}
+=== CURRENT USER QUERY ===
 {query}
 
 {rag_context}

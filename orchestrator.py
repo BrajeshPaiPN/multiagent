@@ -38,6 +38,7 @@ from agents.hallucination_verifier import node_hallucination_verifier
 class LegalState(TypedDict):
     user_query: str
     mode: str
+    chat_history: List[dict]
     rag_context: str
     routed_domains: List[str]
     
@@ -58,15 +59,13 @@ class LegalState(TypedDict):
 
 def should_revise(state: LegalState) -> str:
     """Conditional edge from critic."""
-    if state.get("needs_revision", False) and state.get("revision_count", 0) < 3:
-        print("\n    >> CRITIC REJECTED: Routing back to Master Synthesizer for Revision.")
+    if state["needs_revision"] and state["revision_count"] < 2:
         return "master_synthesizer"
-    else:
-        print("\n    >> CRITIC APPROVED (or max retries reached): Ending.")
-        return END
+    return END
 
 
-def build_legal_graph():
+def build_legal_graph() -> StateGraph:
+    """Constructs the multi-agent execution DAG."""
     workflow = StateGraph(LegalState)
 
     # ── Nodes ─────────────────────────────────────────────────────────────
@@ -126,10 +125,11 @@ def build_legal_graph():
     return workflow.compile()
 
 
-def create_initial_state(query: str, mode: str = "citizen") -> LegalState:
+def create_initial_state(query: str, mode: str = "citizen", chat_history: List[dict] = None) -> LegalState:
     return {
         "user_query": query,
         "mode": mode,
+        "chat_history": chat_history or [],
         "rag_context": "",
         "routed_domains": [],
         "expert_drafts": [],
