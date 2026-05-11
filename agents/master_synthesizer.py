@@ -73,7 +73,11 @@ Combine the expert opinions below into one cohesive, well-structured Legal Memor
 3. YOUR RIGHTS & LEGAL STANDING
 4. RECOMMENDED COURSE OF ACTION (step-by-step)
 5. RISKS & WHAT TO WATCH OUT FOR
-6. CONCLUSION
+6. ONGOING APPEALS & LANDMARK CONTEXT (Mandatory if applicable)
+   - If the query relates to a famous, controversial, or unresolved landmark case (e.g., Sabarimala review petitions, Marital Rape exception, Electoral Bonds), you MUST include this section.
+   - Summarize the ongoing status (e.g., referred to a larger 9-judge bench, pending review).
+   - Provide an UNBIASED view of the arguments from BOTH sides and assess their validity.
+7. CONCLUSION
 """
 
     if not GROQ_API_KEY:
